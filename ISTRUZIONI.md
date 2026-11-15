@@ -77,8 +77,14 @@ Toninato/
 │   ├── functions.php      ← supporti del tema, caricamento CSS/JS e font
 │   ├── header.php         ← barra contatti, logo, menu
 │   ├── footer.php         ← piè di pagina
-│   ├── front-page.php     ← homepage
-│   ├── index.php          ← template di base (pagine, articoli)
+│   ├── page.php           ← template predefinito delle pagine
+│   ├── index.php          ← template di riserva (articoli, archivi, 404)
+│   ├── page-templates/    ← template da scegliere nella pagina (Attributi → Template)
+│   │   ├── template-home.php      ← "Home" (la homepage)
+│   │   ├── template-servizi.php   ← "Servizi (elenco)"
+│   │   ├── template-servizio.php  ← "Servizio (dettaglio)" per ogni area di attività
+│   │   └── template-contatti.php  ← "Contatti"
+│   ├── template-parts/    ← blocchi riusati: intestazione pagina, griglia servizi, contatti
 │   ├── inc/
 │   │   ├── data.php       ← DATI DELLO STUDIO: recapiti, servizi, menu di riserva
 │   │   └── template-tags.php ← icone, logo testuale, funzioni di supporto
@@ -87,6 +93,8 @@ Toninato/
 │       ├── js/main.js     ← menu mobile e animazioni di comparsa
 │       ├── fonts/         ← Bacasime Antique e Tajawal (ospitati in locale, niente Google)
 │       └── images/        ← foto dello studio e dei servizi
+├── tools/seed-content.php ← crea pagine, immagini e menu (vedi sotto)
+├── deploy.py              ← pubblica il tema sullo stage
 ├── docker-compose.yml     ← configurazione dei container
 ├── .env.example           ← modello delle variabili (porte, credenziali)
 ├── .env                   ← variabili reali (NON va su git)
@@ -97,6 +105,37 @@ WordPress (core e plugin) e il database **non** stanno nella repo: vivono nei vo
 
 **Per cambiare telefono, indirizzo, email o servizi** si modifica solo `theme/inc/data.php`:
 header, homepage e footer si aggiornano da soli.
+
+### Pagine e menu
+
+Le pagine esistono davvero in WordPress (Pagine → Tutte le pagine), ognuna con il suo template:
+
+| Pagina | Indirizzo | Template |
+|--------|-----------|----------|
+| Home (homepage) | `/` | Home |
+| Lo Studio | `/lo-studio/` | predefinito |
+| Garanzia di professionalità | `/garanzia-di-professionalita/` | predefinito |
+| Servizi | `/servizi/` | Servizi (elenco) |
+| 8 aree di attività | `/servizi/<nome>/` | Servizio (dettaglio) |
+| Diritto civile | `/diritto-civile/` | predefinito |
+| Diritto penale | `/diritto-penale/` | predefinito |
+| Contatti | `/contatti/` | Contatti |
+
+- I **testi** si modificano dall'editor di WordPress. Nella Home il testo modificabile è la presentazione
+  (il riquadro bianco sotto la foto); le altre sezioni della Home sono nel template.
+- L'**immagine in evidenza** di ogni pagina è lo sfondo della sua intestazione.
+- Il **riassunto** (excerpt) della pagina è la frase sotto il titolo.
+- **Menu**: Aspetto → Menu. "Menu principale" è collegato all'header, "Menu footer" ai Link utili.
+
+Per ricreare pagine, immagini e menu (per esempio dopo `docker compose down -v`):
+
+```bash
+docker compose run --rm wpcli wp eval-file /tools/seed-content.php          # crea solo ciò che manca
+docker compose run --rm wpcli wp eval-file /tools/seed-content.php update   # riscrive anche testi e menu
+```
+
+Lo script usa come autore l'utente `rmweb` e non crea doppioni se rilanciato.
+⚠️ Con `update` le modifiche fatte a mano a testi e menu vengono sovrascritte.
 
 ---
 
@@ -158,7 +197,8 @@ docker compose down -v     # ATTENZIONE: cancella database, plugin e upload
 docker compose up -d
 ```
 
-Poi rifare i punti 4, 5 e 6 della prima installazione. La cartella `theme/` non viene toccata.
+Poi rifare i punti 4, 5 e 6 della prima installazione, ricreare l'utente `rmweb` e lanciare
+`tools/seed-content.php` per pagine e menu. La cartella `theme/` non viene toccata.
 
 ---
 
@@ -173,7 +213,48 @@ La versione serve anche a forzare il browser a ricaricare il CSS dopo una modifi
 
 ---
 
-## 10. Problemi frequenti
+## 10. Stage online
+
+| Cosa             | Valore |
+|------------------|--------|
+| Indirizzo        | https://www.demosocialone.it/toninato4/ |
+| Pannello admin   | https://www.demosocialone.it/toninato4/wp-admin (`rmweb`) |
+| Cartella FTP     | `/www.demosocialone.it/toninato4` (FileZilla → *Demosocialone.it*) |
+| Database         | `Sql1892487_5`, prefisso tabelle `toninato4_wp_` |
+
+Credenziali FTP e database: in FileZilla e nel `wp-config.php` dello stage, **non** nella repo.
+
+> ⚠️ Lo spazio FTP contiene **tutti** i siti dei clienti e il database ospita altre demo:
+> lavorare solo dentro `toninato4` e solo sulle tabelle `toninato4_wp_`.
+
+### Pubblicare il tema sullo stage
+
+```bash
+python deploy.py --dry-run   # prova: mostra cosa verrebbe caricato, non tocca niente
+python deploy.py             # pubblica (chiede conferma)
+python deploy.py -y          # pubblica senza chiedere conferma
+python deploy.py --full      # ricarica tutti i file, non solo quelli cambiati
+```
+
+Su Windows c'è anche la scorciatoia `.\deploy` (accetta le stesse opzioni).
+
+- Carica **solo** la cartella `theme/` in `/www.demosocialone.it/toninato4/wp-content/themes/toninato/`
+  e rifiuta qualsiasi percorso fuori da lì.
+- Carica solo i file cambiati e cancella dal server quelli eliminati in locale.
+  L'elenco dei file pubblicati sta in `.deploy-manifest.json` nella cartella remota del tema.
+- Avvisa se ci sono modifiche al tema non ancora committate.
+- Credenziali FTP: le legge dal sito *Demosocialone.it* di FileZilla. Su un PC senza FileZilla
+  si mettono nel `.env` (vedi `.env.example`), che non va su git.
+- Non tocca il database né i file di WordPress: pubblica solo il tema.
+- Serve Python 3 (nessuna libreria da installare).
+
+**Database:** il MySQL di Aruba non accetta connessioni dall'esterno; si gestisce da
+phpMyAdmin del pannello Aruba. Il server è MySQL 8: negli import aggiungere in testa
+`SET SESSION sql_mode='NO_ENGINE_SUBSTITUTION';` altrimenti le date `0000-00-00` di WordPress danno errore.
+
+---
+
+## 11. Problemi frequenti
 
 | Problema | Soluzione |
 |----------|-----------|

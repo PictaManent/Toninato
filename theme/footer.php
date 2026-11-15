@@ -65,8 +65,10 @@ $info = toninato_info();
 				&copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> Toninato Avv. Stefania &middot; P.IVA <?php echo esc_html( $info['piva'] ); ?>
 			</p>
 			<p>
-				<a href="<?php echo esc_url( home_url( '/privacy-policy/' ) ); ?>">Privacy Policy</a>
-				&middot; Design by R.M.Web
+				<?php if ( get_privacy_policy_url() ) : ?>
+					<a href="<?php echo esc_url( get_privacy_policy_url() ); ?>">Privacy Policy</a> &middot;
+				<?php endif; ?>
+				Design by R.M.Web
 			</p>
 		</div>
 	</div>

@@ -97,10 +97,11 @@ function toninato_services() {
 function toninato_default_menu() {
 	return array(
 		array( 'label' => 'Home', 'url' => home_url( '/' ) ),
-		array( 'label' => 'Lo Studio', 'url' => home_url( '/lo-studio/' ) ),
-		array( 'label' => 'Garanzia di professionalità', 'url' => home_url( '/garanzia-di-professionalita/' ) ),
-		array( 'label' => 'Diritto civile', 'url' => home_url( '/diritto-civile/' ) ),
-		array( 'label' => 'Diritto penale', 'url' => home_url( '/diritto-penale/' ) ),
-		array( 'label' => 'Contatti', 'url' => home_url( '/contatti/' ) ),
+		array( 'label' => 'Lo Studio', 'url' => toninato_page_url( 'lo-studio' ) ),
+		array( 'label' => 'Garanzia di professionalità', 'url' => toninato_page_url( 'garanzia-di-professionalita' ) ),
+		array( 'label' => 'Servizi', 'url' => toninato_page_url( 'servizi' ) ),
+		array( 'label' => 'Diritto civile', 'url' => toninato_page_url( 'diritto-civile' ) ),
+		array( 'label' => 'Diritto penale', 'url' => toninato_page_url( 'diritto-penale' ) ),
+		array( 'label' => 'Contatti', 'url' => toninato_page_url( 'contatti' ) ),
 	);
 }

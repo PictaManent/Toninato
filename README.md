@@ -25,6 +25,13 @@ docker compose up -d
 docker compose run --rm wpcli wp <comando>
 ```
 
+## Deploy sullo stage
+
+```bash
+python deploy.py --dry-run   # prova
+python deploy.py             # pubblica il tema su https://www.demosocialone.it/toninato4/
+```
+
 ## Stop
 
 ```bash

@@ -45,6 +45,7 @@ services:
     volumes:
       - wp_data:/var/www/html
       - ./theme:/var/www/html/wp-content/themes/toninato
+      - ./tools:/tools:ro
 
   phpmyadmin:
     image: phpmyadmin:5

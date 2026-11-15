@@ -8,6 +8,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * URL di una pagina dal suo percorso (es. "servizi/recupero-crediti").
+ * Se la pagina non esiste ancora, restituisce comunque l'indirizzo previsto.
+ *
+ * @param string $path Percorso della pagina.
+ * @return string
+ */
+function toninato_page_url( $path ) {
+	$page = get_page_by_path( $path );
+	return $page ? get_permalink( $page ) : home_url( '/' . trim( $path, '/' ) . '/' );
+}
+
+/**
+ * URL dell'immagine di copertina della pagina, con un'immagine del tema di riserva.
+ *
+ * @param int    $post_id  ID della pagina.
+ * @param string $fallback File in assets/images.
+ * @return string
+ */
+function toninato_cover_url( $post_id, $fallback = 'studio-ufficio.jpg' ) {
+	$url = get_the_post_thumbnail_url( $post_id, 'full' );
+	return $url ? $url : toninato_img( $fallback );
+}
+
+/**
  * URL di un'immagine del tema.
  *
  * @param string $file Nome del file in assets/images.

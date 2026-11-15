@@ -1,6 +1,8 @@
 <?php
 /**
- * Homepage.
+ * Template Name: Home
+ *
+ * Homepage. Il testo di presentazione è il contenuto della pagina (modificabile dall'editor).
  */
 
 get_header();
@@ -9,6 +11,7 @@ $info = toninato_info();
 ?>
 
 <main id="main" class="site-main">
+	<?php while ( have_posts() ) : the_post(); ?>
 
 	<!-- Hero -->
 	<section class="hero" style="--hero-image: url('<?php echo esc_url( toninato_img( 'studio-ufficio.jpg' ) ); ?>');">
@@ -22,41 +25,28 @@ $info = toninato_info();
 				<p class="hero__place"><?php echo esc_html( $info['city'] . ' (' . $info['province'] . ')' ); ?></p>
 				<div class="hero__actions">
 					<a class="btn btn--primary" href="tel:<?php echo esc_attr( $info['phone']['tel'] ); ?>">Chiama lo studio</a>
-					<a class="btn btn--ghost" href="<?php echo esc_url( home_url( '/contatti/' ) ); ?>">Contatti</a>
+					<a class="btn btn--ghost" href="<?php echo esc_url( toninato_page_url( 'contatti' ) ); ?>">Contatti</a>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- Presentazione -->
+	<!-- Presentazione (contenuto della pagina) -->
 	<section class="intro">
 		<div class="container">
 			<div class="intro__card">
 				<div class="intro__text">
-					<h1 class="intro__heading">Assistenza e consulenza legale in diritto civile e penale a Moncalieri</h1>
-					<p>
-						L'Avvocato <strong>Stefania Toninato</strong> offre un servizio di consulenza legale
-						presso lo studio in <strong>via Cavour 38, a Moncalieri</strong>, in provincia di Torino.
-						Grazie a una consolidata esperienza nel settore e a un percorso di formazione in costante
-						aggiornamento, garantisce assistenza legale all'insegna della <strong>serietà</strong>,
-						della <strong>discrezione</strong> e della <strong>professionalità</strong>,
-						dal primo all'ultimo grado di giudizio.
-					</p>
-
-					<h2 class="intro__heading">Garanzia di professionalità</h2>
-					<p>
-						Laureata a pieni voti presso l'<strong>Università degli Studi di Torino</strong>, con studio
-						a Moncalieri dal <?php echo esc_html( $info['since'] ); ?>, l'Avvocato Toninato assiste
-						<strong>privati e aziende</strong> in controversie civili e penali, <strong>fino al giudizio in Cassazione</strong>.
-						Avvalendosi della collaborazione di medici legali, ingegneri, architetti, commercialisti
-						e consulenti del lavoro, lo studio offre un servizio di consulenza e assistenza legale completo.
-					</p>
-					<a class="link-more" href="<?php echo esc_url( home_url( '/lo-studio/' ) ); ?>">
+					<?php the_content(); ?>
+					<a class="link-more" href="<?php echo esc_url( toninato_page_url( 'lo-studio' ) ); ?>">
 						Scopri lo studio <?php echo toninato_icon( 'arrow' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					</a>
 				</div>
 				<figure class="intro__media">
-					<img src="<?php echo esc_url( toninato_img( 'avvocato-toninato.jpg' ) ); ?>" alt="L'Avvocato Stefania Toninato nel suo studio di Moncalieri" width="1350" height="550" loading="eager">
+					<?php if ( has_post_thumbnail() ) : ?>
+						<?php the_post_thumbnail( 'large', array( 'loading' => 'eager' ) ); ?>
+					<?php else : ?>
+						<img src="<?php echo esc_url( toninato_img( 'avvocato-toninato.jpg' ) ); ?>" alt="L'Avvocato Stefania Toninato nel suo studio di Moncalieri" width="1350" height="550" loading="eager">
+					<?php endif; ?>
 				</figure>
 			</div>
 		</div>
@@ -70,23 +60,7 @@ $info = toninato_info();
 				<h2 class="section-title">Aree di attività</h2>
 				<p class="section-lead">Assistenza in controversie civili e penali, fino al giudizio in Cassazione.</p>
 			</header>
-
-			<div class="services__grid">
-				<?php foreach ( toninato_services() as $service ) : ?>
-					<article class="service-card">
-						<a class="service-card__link" href="<?php echo esc_url( home_url( '/' . $service['slug'] . '/' ) ); ?>">
-							<div class="service-card__media">
-								<img src="<?php echo esc_url( toninato_img( $service['image'] ) ); ?>" alt="" width="900" height="600" loading="lazy">
-							</div>
-							<div class="service-card__body">
-								<h3 class="service-card__title"><?php echo esc_html( $service['title'] ); ?></h3>
-								<p class="service-card__text"><?php echo esc_html( $service['text'] ); ?></p>
-								<span class="service-card__more">Scopri di più <?php echo toninato_icon( 'arrow' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
-							</div>
-						</a>
-					</article>
-				<?php endforeach; ?>
-			</div>
+			<?php get_template_part( 'template-parts/services-grid' ); ?>
 		</div>
 	</section>
 
@@ -138,7 +112,7 @@ $info = toninato_info();
 						successioni, locazioni, condominio, recupero crediti, contratti, procedure fallimentari,
 						aste e ricerca immobili, ristrutturazione del debito.
 					</p>
-					<a class="link-more" href="<?php echo esc_url( home_url( '/diritto-civile/' ) ); ?>">
+					<a class="link-more" href="<?php echo esc_url( toninato_page_url( 'diritto-civile' ) ); ?>">
 						Approfondisci <?php echo toninato_icon( 'arrow' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					</a>
 				</div>
@@ -154,7 +128,7 @@ $info = toninato_info();
 						Assistenza completa per la redazione di querele e nei processi con costituzione
 						di parte civile, fino all'ultimo grado di giudizio.
 					</p>
-					<a class="link-more" href="<?php echo esc_url( home_url( '/diritto-penale/' ) ); ?>">
+					<a class="link-more" href="<?php echo esc_url( toninato_page_url( 'diritto-penale' ) ); ?>">
 						Approfondisci <?php echo toninato_icon( 'arrow' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					</a>
 				</div>
@@ -172,10 +146,10 @@ $info = toninato_info();
 			<div class="gallery__grid">
 				<?php
 				$photos = array(
-					'studio-ufficio.jpg'        => 'Ufficio dell\'Avvocato Toninato',
-					'studio-ingresso.jpg'       => 'Sala d\'attesa dello studio',
-					'studio-scrivania.jpg'      => 'Scrivania dello studio legale',
-					'studio-sala-riunioni.jpg'  => 'Sala riunioni dello studio',
+					'studio-ufficio.jpg'       => 'Ufficio dell\'Avvocato Toninato',
+					'studio-ingresso.jpg'      => 'Sala d\'attesa dello studio',
+					'studio-scrivania.jpg'     => 'Scrivania dello studio legale',
+					'studio-sala-riunioni.jpg' => 'Sala riunioni dello studio',
 				);
 				foreach ( $photos as $file => $alt ) :
 					?>
@@ -187,27 +161,9 @@ $info = toninato_info();
 		</div>
 	</section>
 
-	<!-- Contatti -->
-	<section class="section cta">
-		<div class="container">
-			<div class="cta__card">
-				<h2 class="cta__title">Hai bisogno di un avvocato a Moncalieri?</h2>
-				<p class="cta__subtitle">Contatta lo studio:</p>
-				<div class="cta__phones">
-					<a href="tel:<?php echo esc_attr( $info['phone']['tel'] ); ?>"><?php echo toninato_icon( 'phone' ); // phpcs:ignore WordPress.Security.EscapeOutput ?> <?php echo esc_html( $info['phone']['label'] ); ?></a>
-					<a href="tel:<?php echo esc_attr( $info['mobile']['tel'] ); ?>"><?php echo toninato_icon( 'mobile' ); // phpcs:ignore WordPress.Security.EscapeOutput ?> <?php echo esc_html( $info['mobile']['label'] ); ?></a>
-				</div>
-				<a class="cta__email" href="mailto:<?php echo esc_attr( antispambot( $info['email'] ) ); ?>">
-					<?php echo toninato_icon( 'mail' ); // phpcs:ignore WordPress.Security.EscapeOutput ?> <?php echo esc_html( antispambot( $info['email'] ) ); ?>
-				</a>
-				<p class="cta__note">
-					<?php echo toninato_icon( 'clock' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-					Lo studio riceve solo su appuntamento. Si garantisce risposta immediata o un nuovo contatto entro un'ora.
-				</p>
-			</div>
-		</div>
-	</section>
+	<?php get_template_part( 'template-parts/cta' ); ?>
 
+	<?php endwhile; ?>
 </main>
 
 <?php

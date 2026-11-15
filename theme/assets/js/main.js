@@ -27,7 +27,7 @@
 			}
 		} );
 
-		window.matchMedia( '(min-width: 981px)' ).addEventListener( 'change', function ( mq ) {
+		window.matchMedia( '(min-width: 1200px)' ).addEventListener( 'change', function ( mq ) {
 			if ( mq.matches ) {
 				setOpen( false );
 			}
