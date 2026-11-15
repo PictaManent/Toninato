@@ -4,6 +4,9 @@ Tema WordPress su misura, con ambiente di sviluppo locale in Docker.
 
 Guida completa (installazione, comandi, backup, problemi frequenti): [ISTRUZIONI.md](ISTRUZIONI.md).
 
+Come è costruito il progetto e come usarlo come **base per i nuovi siti R.M.Web** (architettura, campi
+Secure Custom Fields, stage, regole dell'agenzia): [CLAUDE.md](CLAUDE.md).
+
 ## Struttura
 
 - `theme/` — il tema, montato nel container come `wp-content/themes/toninato`
