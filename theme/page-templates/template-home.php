@@ -2,30 +2,40 @@
 /**
  * Template Name: Home
  *
- * Homepage. Il testo di presentazione è il contenuto della pagina (modificabile dall'editor).
+ * Homepage. Testi e immagini si modificano dal pannello: il testo di presentazione è il contenuto
+ * della pagina, il resto sta nel riquadro "Contenuti della Home" (campi in inc/fields.php).
+ * Ogni campo vuoto usa il contenuto predefinito di toninato_home_defaults().
  */
 
 get_header();
 
-$info = toninato_info();
+$d = toninato_home_defaults();
 ?>
 
 <main id="main" class="site-main">
 	<?php while ( have_posts() ) : the_post(); ?>
 
+	<?php
+	$hero_lines = preg_split( '/\R/', (string) toninato_field( 'hero_lines', $d['hero_lines'] ) );
+	$hero_btn_1 = toninato_link( toninato_field( 'hero_button_1' ), $d['hero_button_1'] );
+	$hero_btn_2 = toninato_link( toninato_field( 'hero_button_2' ), $d['hero_button_2'] );
+	$intro_link = toninato_link( toninato_field( 'intro_link' ), $d['intro_link'] );
+	?>
+
 	<!-- Hero -->
-	<section class="hero" style="--hero-image: url('<?php echo esc_url( toninato_img( 'studio-ufficio.jpg' ) ); ?>');">
+	<section class="hero" style="--hero-image: url('<?php echo esc_url( toninato_image_url( toninato_field( 'hero_image' ), $d['hero_image'], 'full' ) ); ?>');">
 		<div class="container hero__inner">
 			<div class="hero__content">
 				<span class="hero__mark" aria-hidden="true">ST</span>
-				<p class="hero__title"><?php echo esc_html( $info['title'] ); ?></p>
-				<p class="hero__name"><?php echo esc_html( $info['name'] ); ?></p>
-				<p class="hero__line"><?php echo esc_html( $info['qualifica'] ); ?></p>
-				<p class="hero__line">Consulenza e assistenza in diritto civile e penale</p>
-				<p class="hero__place"><?php echo esc_html( $info['city'] . ' (' . $info['province'] . ')' ); ?></p>
+				<p class="hero__title"><?php echo esc_html( toninato_field( 'hero_title', $d['hero_title'] ) ); ?></p>
+				<p class="hero__name"><?php echo esc_html( toninato_field( 'hero_name', $d['hero_name'] ) ); ?></p>
+				<?php foreach ( array_filter( array_map( 'trim', $hero_lines ) ) as $line ) : ?>
+					<p class="hero__line"><?php echo esc_html( $line ); ?></p>
+				<?php endforeach; ?>
+				<p class="hero__place"><?php echo esc_html( toninato_field( 'hero_place', $d['hero_place'] ) ); ?></p>
 				<div class="hero__actions">
-					<a class="btn btn--primary" href="tel:<?php echo esc_attr( $info['phone']['tel'] ); ?>">Chiama lo studio</a>
-					<a class="btn btn--ghost" href="<?php echo esc_url( toninato_page_url( 'contatti' ) ); ?>">Contatti</a>
+					<a class="btn btn--primary" <?php echo toninato_link_attrs( $hero_btn_1 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>><?php echo esc_html( $hero_btn_1['title'] ); ?></a>
+					<a class="btn btn--ghost" <?php echo toninato_link_attrs( $hero_btn_2 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>><?php echo esc_html( $hero_btn_2['title'] ); ?></a>
 				</div>
 			</div>
 		</div>
@@ -37,8 +47,8 @@ $info = toninato_info();
 			<div class="intro__card">
 				<div class="intro__text">
 					<?php the_content(); ?>
-					<a class="link-more" href="<?php echo esc_url( toninato_page_url( 'lo-studio' ) ); ?>">
-						Scopri lo studio <?php echo toninato_icon( 'arrow' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+					<a class="link-more" <?php echo toninato_link_attrs( $intro_link ); // phpcs:ignore WordPress.Security.EscapeOutput ?>>
+						<?php echo esc_html( $intro_link['title'] ); ?> <?php echo toninato_icon( 'arrow' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					</a>
 				</div>
 				<figure class="intro__media">
@@ -56,9 +66,12 @@ $info = toninato_info();
 	<section class="section services" id="aree-di-attivita">
 		<div class="container">
 			<header class="section-head">
-				<p class="overline">Di cosa si occupa lo studio</p>
-				<h2 class="section-title">Aree di attività</h2>
-				<p class="section-lead">Assistenza in controversie civili e penali, fino al giudizio in Cassazione.</p>
+				<p class="overline"><?php echo esc_html( toninato_field( 'services_overline', $d['services_overline'] ) ); ?></p>
+				<h2 class="section-title"><?php echo esc_html( toninato_field( 'services_title', $d['services_title'] ) ); ?></h2>
+				<?php $lead = toninato_field( 'services_lead', $d['services_lead'] ); ?>
+				<?php if ( $lead ) : ?>
+					<p class="section-lead"><?php echo esc_html( $lead ); ?></p>
+				<?php endif; ?>
 			</header>
 			<?php get_template_part( 'template-parts/services-grid' ); ?>
 		</div>
@@ -68,31 +81,20 @@ $info = toninato_info();
 	<section class="section values">
 		<div class="container">
 			<header class="section-head section-head--light">
-				<p class="overline">Perché scegliere lo studio</p>
-				<h2 class="section-title">Valori e punti di forza</h2>
+				<p class="overline"><?php echo esc_html( toninato_field( 'values_overline', $d['values_overline'] ) ); ?></p>
+				<h2 class="section-title"><?php echo esc_html( toninato_field( 'values_title', $d['values_title'] ) ); ?></h2>
 			</header>
 
 			<div class="values__grid">
-				<div class="value">
-					<span class="value__icon"><?php echo toninato_icon( 'scale' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
-					<h3 class="value__title">Fino in Cassazione</h3>
-					<p>Avvocato patrocinante in Cassazione: assistenza dal primo all'ultimo grado di giudizio.</p>
-				</div>
-				<div class="value">
-					<span class="value__icon"><?php echo toninato_icon( 'shield' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
-					<h3 class="value__title">Discrezione ed etica</h3>
-					<p>Ogni incarico è seguito con grande discrezione, etica e nel pieno rispetto del codice deontologico.</p>
-				</div>
-				<div class="value">
-					<span class="value__icon"><?php echo toninato_icon( 'chat' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
-					<h3 class="value__title">Contatto diretto</h3>
-					<p>Rapporto diretto con il cliente e reperibilità telefonica immediata: risposta subito o entro un'ora.</p>
-				</div>
-				<div class="value">
-					<span class="value__icon"><?php echo toninato_icon( 'users' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
-					<h3 class="value__title">Rete di professionisti</h3>
-					<p>Collaborazione con medici legali, ingegneri, architetti, commercialisti e consulenti del lavoro.</p>
-				</div>
+				<?php foreach ( toninato_field( 'values', $d['values'] ) as $value ) : ?>
+					<div class="value">
+						<span class="value__icon"><?php echo toninato_icon( $value['icon'] ?: 'scale' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
+						<h3 class="value__title"><?php echo esc_html( $value['title'] ); ?></h3>
+						<?php if ( $value['text'] ) : ?>
+							<p><?php echo esc_html( $value['text'] ); ?></p>
+						<?php endif; ?>
+					</div>
+				<?php endforeach; ?>
 			</div>
 		</div>
 	</section>
@@ -100,39 +102,35 @@ $info = toninato_info();
 	<!-- Ambiti -->
 	<section class="section areas">
 		<div class="container areas__grid">
-			<article class="area">
-				<div class="area__media">
-					<img src="<?php echo esc_url( toninato_img( 'targa-studio.jpg' ) ); ?>" alt="Targa dello studio dell'Avvocato Stefania Toninato" width="1600" height="898" loading="lazy">
-				</div>
-				<div class="area__body">
-					<p class="overline">Privati e aziende</p>
-					<h2 class="area__title">Diritto civile</h2>
-					<p>
-						Assistenza legale in ambito civile a persone fisiche e aziende: famiglia, risarcimento danni,
-						successioni, locazioni, condominio, recupero crediti, contratti, procedure fallimentari,
-						aste e ricerca immobili.
-					</p>
-					<a class="link-more" href="<?php echo esc_url( toninato_page_url( 'diritto-civile' ) ); ?>">
-						Approfondisci <?php echo toninato_icon( 'arrow' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-					</a>
-				</div>
-			</article>
-			<article class="area">
-				<div class="area__media">
-					<img src="<?php echo esc_url( toninato_img( 'biglietto-studio.jpg' ) ); ?>" alt="Biglietto da visita dello Studio Legale Toninato" width="1920" height="1280" loading="lazy">
-				</div>
-				<div class="area__body">
-					<p class="overline">Tutela della persona</p>
-					<h2 class="area__title">Diritto penale</h2>
-					<p>
-						Assistenza completa per la redazione di querele e nei processi con costituzione
-						di parte civile, fino all'ultimo grado di giudizio.
-					</p>
-					<a class="link-more" href="<?php echo esc_url( toninato_page_url( 'diritto-penale' ) ); ?>">
-						Approfondisci <?php echo toninato_icon( 'arrow' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-					</a>
-				</div>
-			</article>
+			<?php foreach ( toninato_field( 'areas', $d['areas'] ) as $i => $area ) : ?>
+				<?php
+				$fallback = $d['areas'][ $i ] ?? $d['areas'][0];
+				$is_file  = ! is_numeric( $area['image'] );
+				$link     = toninato_link( $area['link'] ?? null, array( 'url' => '', 'title' => '', 'target' => '' ) );
+				?>
+				<article class="area">
+					<div class="area__media">
+						<?php
+						// phpcs:ignore WordPress.Security.EscapeOutput
+						echo toninato_image_tag( $is_file ? 0 : $area['image'], $is_file && $area['image'] ? $area['image'] : $fallback['image'], $area['alt'] ?? $area['title'], array( 'width' => 1600, 'height' => 1000 ) );
+						?>
+					</div>
+					<div class="area__body">
+						<?php if ( $area['overline'] ) : ?>
+							<p class="overline"><?php echo esc_html( $area['overline'] ); ?></p>
+						<?php endif; ?>
+						<h2 class="area__title"><?php echo esc_html( $area['title'] ); ?></h2>
+						<?php if ( $area['text'] ) : ?>
+							<p><?php echo esc_html( $area['text'] ); ?></p>
+						<?php endif; ?>
+						<?php if ( $link['url'] ) : ?>
+							<a class="link-more" <?php echo toninato_link_attrs( $link ); // phpcs:ignore WordPress.Security.EscapeOutput ?>>
+								<?php echo esc_html( $link['title'] ?: 'Approfondisci' ); ?> <?php echo toninato_icon( 'arrow' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+							</a>
+						<?php endif; ?>
+					</div>
+				</article>
+			<?php endforeach; ?>
 		</div>
 	</section>
 
@@ -140,28 +138,32 @@ $info = toninato_info();
 	<section class="section gallery">
 		<div class="container">
 			<header class="section-head">
-				<p class="overline">Via Cavour 38, Moncalieri</p>
-				<h2 class="section-title">Nello studio</h2>
+				<p class="overline"><?php echo esc_html( toninato_field( 'gallery_overline', $d['gallery_overline'] ) ); ?></p>
+				<h2 class="section-title"><?php echo esc_html( toninato_field( 'gallery_title', $d['gallery_title'] ) ); ?></h2>
 			</header>
 			<div class="gallery__grid">
-				<?php
-				$photos = array(
-					'studio-ufficio.jpg'       => 'Ufficio dell\'Avvocato Toninato',
-					'studio-ingresso.jpg'      => 'Sala d\'attesa dello studio',
-					'studio-scrivania.jpg'     => 'Scrivania dello studio legale',
-					'studio-sala-riunioni.jpg' => 'Sala riunioni dello studio',
-				);
-				foreach ( $photos as $file => $alt ) :
-					?>
-					<figure class="gallery__item">
-						<img src="<?php echo esc_url( toninato_img( $file ) ); ?>" alt="<?php echo esc_attr( $alt ); ?>" width="1920" height="1280" loading="lazy">
-					</figure>
-				<?php endforeach; ?>
+				<?php $photos = toninato_field( 'gallery' ); ?>
+				<?php if ( $photos ) : ?>
+					<?php foreach ( $photos as $photo_id ) : ?>
+						<figure class="gallery__item"><?php echo wp_get_attachment_image( $photo_id, 'large', false, array( 'loading' => 'lazy' ) ); ?></figure>
+					<?php endforeach; ?>
+				<?php else : ?>
+					<?php foreach ( $d['gallery'] as $file => $alt ) : ?>
+						<figure class="gallery__item">
+							<img src="<?php echo esc_url( toninato_img( $file ) ); ?>" alt="<?php echo esc_attr( $alt ); ?>" width="1920" height="1280" loading="lazy">
+						</figure>
+					<?php endforeach; ?>
+				<?php endif; ?>
 			</div>
 		</div>
 	</section>
 
-	<?php get_template_part( 'template-parts/reviews' ); ?>
+	<?php
+	get_template_part( 'template-parts/reviews', null, array(
+		'overline' => toninato_field( 'reviews_overline', $d['reviews_overline'] ),
+		'title'    => toninato_field( 'reviews_title', $d['reviews_title'] ),
+	) );
+	?>
 
 	<?php get_template_part( 'template-parts/cta' ); ?>
 

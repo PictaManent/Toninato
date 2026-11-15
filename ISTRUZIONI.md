@@ -85,8 +85,10 @@ Toninato/
 │   │   ├── template-servizio.php  ← "Servizio (dettaglio)" per ogni area di attività
 │   │   └── template-contatti.php  ← "Contatti"
 │   ├── template-parts/    ← blocchi riusati: intestazione pagina, griglia servizi, contatti
+│   ├── acf-json/          ← gruppi di campi di Secure Custom Fields (scritti da SCF, non a mano)
 │   ├── inc/
 │   │   ├── data.php       ← DATI DELLO STUDIO: recapiti, servizi, menu di riserva
+│   │   ├── fields.php     ← funzioni per i campi (Secure Custom Fields) e contenuti predefiniti
 │   │   └── template-tags.php ← icone, logo testuale, funzioni di supporto
 │   └── assets/
 │       ├── css/main.css   ← tutti gli stili (colori e font in :root in cima)
@@ -103,7 +105,7 @@ Toninato/
 
 WordPress (core e plugin) e il database **non** stanno nella repo: vivono nei volumi Docker.
 
-**Per cambiare telefono, indirizzo, email o servizi** si modifica solo `theme/inc/data.php`:
+**Per cambiare telefono, indirizzo o email** si modifica solo `theme/inc/data.php`:
 header, homepage e footer si aggiornano da soli.
 
 ### Pagine e menu
@@ -121,8 +123,20 @@ Le pagine esistono davvero in WordPress (Pagine → Tutte le pagine), ognuna con
 | Diritto penale | `/diritto-penale/` | predefinito |
 | Contatti | `/contatti/` | Contatti |
 
-- I **testi** si modificano dall'editor di WordPress. Nella Home il testo modificabile è la presentazione
-  (il riquadro bianco sotto la foto); le altre sezioni della Home sono nel template.
+- I **testi** si modificano dall'editor di WordPress.
+- **Home**: il testo di presentazione (riquadro bianco sotto la testata) è il contenuto della pagina; tutto il
+  resto (testata, titoli delle sezioni, punti di forza, riquadri Diritto civile/penale, galleria, titolo delle
+  recensioni) si modifica nel riquadro **"Contenuti della Home"** sotto l'editor, diviso in schede.
+  Serve il plugin **Secure Custom Fields** (gratuito, compatibile con ACF). Se il plugin è spento o un campo è
+  vuoto, il sito mostra i contenuti predefiniti (in `theme/inc/fields.php`).
+- **Gruppi di campi**: si creano e modificano da **SCF → Gruppi di campi**. A ogni salvataggio SCF scrive un file
+  `.json` in `theme/acf-json/` (Local JSON): va committato e arriva sullo stage con il deploy. Sullo stage
+  (o su un PC nuovo) i campi funzionano subito; per modificare un gruppo lì, in SCF → Gruppi di campi
+  aprire la voce **Sincronizzazione disponibile** e sincronizzarlo.
+  ⚠️ Modificare i gruppi solo in locale: se si modificano sullo stage, il JSON cambia sul server e il deploy
+  successivo lo sovrascrive.
+- Le **schede dei servizi** (in Home, nella pagina Servizi e in fondo a ogni servizio) sono le pagine figlie di
+  "Servizi": titolo, riassunto e immagine in evidenza di ciascuna, nell'ordine di Attributi pagina → Ordine.
 - L'**immagine in evidenza** di ogni pagina è lo sfondo della sua intestazione.
 - Il **riassunto** (excerpt) della pagina è la frase sotto il titolo.
 - **Menu**: Aspetto → Menu. "Menu principale" è collegato all'header, "Menu footer" ai Link utili.
@@ -137,8 +151,12 @@ docker compose run --rm wpcli wp eval-file /tools/seed-content.php          # cr
 docker compose run --rm wpcli wp eval-file /tools/seed-content.php update   # riscrive anche testi e menu
 ```
 
-Lo script usa come autore l'utente `rmweb` e non crea doppioni se rilanciato.
-⚠️ Con `update` le modifiche fatte a mano a testi e menu vengono sovrascritte.
+Lo script usa come autore l'utente `rmweb` e non crea doppioni se rilanciato. Se Secure Custom Fields è
+attivo compila anche i campi della Home (solo se sono ancora vuoti, o sempre con `update`).
+⚠️ Con `update` le modifiche fatte a mano a testi, campi e menu vengono sovrascritte.
+
+> In **Git Bash** anteporre `MSYS_NO_PATHCONV=1` al comando, altrimenti `/tools/...` viene trasformato in un
+> percorso Windows e lo script non viene trovato.
 
 ---
 

@@ -299,6 +299,54 @@ update_option( 'show_on_front', 'page' );
 update_option( 'page_on_front', $ids['home'] );
 
 /* -------------------------------------------------------------------------
+ * Campi della Home (plugin Secure Custom Fields): riempiti con i contenuti
+ * predefiniti del tema, così nel pannello si trovano già compilati.
+ * Senza "update" si riempiono solo se la Home non ha ancora campi salvati.
+ * ---------------------------------------------------------------------- */
+
+if ( function_exists( 'update_field' ) && function_exists( 'toninato_home_defaults' ) ) {
+	$home_id = $ids['home'];
+	if ( $update || '' === get_post_meta( $home_id, 'hero_title', true ) ) {
+		$d = toninato_home_defaults();
+		$k = 'field_tn_home_';
+
+		foreach ( array( 'hero_title', 'hero_name', 'hero_lines', 'hero_place', 'services_overline', 'services_title', 'services_lead', 'values_overline', 'values_title', 'gallery_overline', 'gallery_title', 'reviews_overline', 'reviews_title' ) as $name ) {
+			update_field( $k . $name, $d[ $name ], $home_id );
+		}
+		foreach ( array( 'hero_button_1', 'hero_button_2', 'intro_link' ) as $name ) {
+			update_field( $k . $name, $d[ $name ], $home_id );
+		}
+		update_field( $k . 'hero_image', tn_media( $d['hero_image'], '' ), $home_id );
+
+		update_field( $k . 'values', array_map( fn( $v ) => array(
+			$k . 'values_icon'       => $v['icon'],
+			$k . 'values_title_item' => $v['title'],
+			$k . 'values_text'       => $v['text'],
+		), $d['values'] ), $home_id );
+
+		update_field( $k . 'areas', array_map( fn( $a ) => array(
+			$k . 'areas_image'    => tn_media( $a['image'], $a['alt'] ),
+			$k . 'areas_overline' => $a['overline'],
+			$k . 'areas_title'    => $a['title'],
+			$k . 'areas_text'     => $a['text'],
+			$k . 'areas_link'     => $a['link'],
+		), $d['areas'] ), $home_id );
+
+		$gallery = array();
+		foreach ( $d['gallery'] as $file => $alt ) {
+			$gallery[] = tn_media( $file, $alt );
+		}
+		update_field( $k . 'gallery', array_values( array_filter( $gallery ) ), $home_id );
+
+		WP_CLI::log( '+ campi della Home compilati' );
+	} else {
+		WP_CLI::log( '= campi della Home già compilati' );
+	}
+} else {
+	WP_CLI::log( '(plugin Secure Custom Fields non attivo: campi della Home saltati)' );
+}
+
+/* -------------------------------------------------------------------------
  * Menu
  * ---------------------------------------------------------------------- */
 

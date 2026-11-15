@@ -11,6 +11,7 @@ define( 'TONINATO_VERSION', wp_get_theme()->get( 'Version' ) );
 
 require get_template_directory() . '/inc/data.php';
 require get_template_directory() . '/inc/template-tags.php';
+require get_template_directory() . '/inc/fields.php';
 
 add_action( 'after_setup_theme', function () {
 	load_theme_textdomain( 'toninato', get_template_directory() . '/languages' );
