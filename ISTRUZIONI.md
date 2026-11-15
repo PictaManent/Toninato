@@ -245,6 +245,9 @@ Su Windows c'è anche la scorciatoia `.\deploy` (accetta le stesse opzioni).
   e rifiuta qualsiasi percorso fuori da lì.
 - Carica solo i file cambiati e cancella dal server quelli eliminati in locale.
   L'elenco dei file pubblicati sta in `.deploy-manifest.json` nella cartella remota del tema.
+- Segnala con `?` i file che stanno sul server ma non in locale (per esempio caricati a mano o prima
+  del manifest): non li cancella, vanno tolti a mano se non servono, perché WordPress potrebbe usarli
+  al posto dei template del tema (è successo con un vecchio `front-page.php`).
 - Avvisa se ci sono modifiche al tema non ancora committate.
 - Credenziali FTP: le legge dal sito *Demosocialone.it* di FileZilla. Su un PC senza FileZilla
   si mettono nel `.env` (vedi `.env.example`), che non va su git.

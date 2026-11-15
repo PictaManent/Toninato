@@ -191,6 +191,28 @@ class Remote:
                 self.ftp.mkd(path)
         self.made.add(path)
 
+    def list_files(self, sub=""):
+        """Elenco (percorsi relativi) di tutti i file presenti nella cartella remota del tema."""
+        found = []
+        folder = posixpath.join(self.base, sub) if sub else self.base
+        try:
+            entries = list(self.ftp.mlsd(folder, facts=["type"]))
+        except ftplib.error_perm:
+            return None  # server senza MLSD: controllo non disponibile
+        for name, facts in entries:
+            if name in (".", ".."):
+                continue
+            rel = posixpath.join(sub, name) if sub else name
+            kind = facts.get("type", "")
+            if kind == "dir":
+                inner = self.list_files(rel)
+                if inner is None:
+                    return None
+                found += inner
+            elif kind == "file":
+                found.append(rel)
+        return found
+
     def read_manifest(self):
         buf = io.BytesIO()
         try:
@@ -270,6 +292,20 @@ def main():
             print(f"  + {f}")
         for f in removed:
             print(f"  - {f}")
+
+        # File sul server che non esistono in locale e che il deploy non conosce
+        # (per esempio caricati prima che esistesse il manifest): non vengono mai
+        # cancellati in automatico, ma possono sostituire i template del tema.
+        on_server = remote.list_files() if remote.exists_dir(remote.base) else []
+        if on_server is None:
+            print("\n(il server non supporta MLSD: controllo dei file estranei saltato)")
+        else:
+            extra = sorted(f for f in on_server if f not in files and f not in removed and f != MANIFEST)
+            if extra:
+                print(f"\n⚠ File sul server che non esistono in locale ({len(extra)}), non toccati dal deploy:")
+                for f in extra:
+                    print(f"  ? {f}")
+                print("  Se non servono vanno cancellati a mano: WordPress potrebbe usarli al posto dei template del tema.")
 
         if not changed and not removed:
             print("\n✔ Niente da pubblicare: lo stage è già aggiornato.")
