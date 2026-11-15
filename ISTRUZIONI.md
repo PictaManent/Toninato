@@ -1,0 +1,173 @@
+# Istruzioni per lo sviluppo in locale
+
+Guida rapida per lavorare sul tema Toninato con WordPress in locale su Docker.
+
+---
+
+## 1. Prerequisiti
+
+- **Docker Desktop** installato e avviato (l'icona della balena deve essere verde).
+- **Git**.
+- Porte libere: `8080` (sito) e `8081` (phpMyAdmin). Si cambiano nel file `.env`.
+
+---
+
+## 2. Indirizzi e credenziali
+
+| Cosa             | Indirizzo                         | Credenziali                |
+|------------------|-----------------------------------|----------------------------|
+| Sito             | http://localhost:8080             | —                          |
+| Pannello admin   | http://localhost:8080/wp-admin    | `rmweb` / `toninato2026rmw` |
+| phpMyAdmin       | http://localhost:8081             | `toninato` / `toninato`    |
+| Database (root)  | —                                 | `root` / `root`            |
+
+Le credenziali del database si trovano nel file `.env`.
+
+---
+
+## 3. Prima installazione (su un PC nuovo)
+
+Da eseguire una sola volta, dentro la cartella del progetto.
+
+```bash
+# 1. Clona la repo
+git clone https://github.com/PictaManent/Toninato.git
+cd Toninato
+
+# 2. Crea il file .env partendo dall'esempio
+cp .env.example .env            # Git Bash
+Copy-Item .env.example .env     # PowerShell
+
+# 3. Avvia i container
+docker compose up -d
+
+# 4. Installa WordPress (attendere qualche secondo dopo l'avvio)
+docker compose run --rm wpcli wp core install --url=http://localhost:8080 --title=Toninato --admin_user=rmweb --admin_password=toninato2026rmw --admin_email=rmweb@example.com --skip-email
+
+# 5. Lingua italiana
+docker compose run --rm wpcli wp language core install it_IT --activate
+
+# 6. Attiva il tema
+docker compose run --rm wpcli wp theme activate toninato
+```
+
+Se il punto 4 dà un errore di connessione al database, aspetta 10-20 secondi che MariaDB finisca di avviarsi e riprova.
+
+---
+
+## 4. Uso quotidiano
+
+```bash
+docker compose up -d       # avvia (o riavvia) l'ambiente
+docker compose stop        # ferma i container, i dati restano
+docker compose ps          # mostra lo stato dei container
+docker compose logs -f wordpress   # log di WordPress/PHP in tempo reale (Ctrl+C per uscire)
+```
+
+Il tema si modifica direttamente nella cartella `theme/`: i cambiamenti si vedono subito ricaricando il browser, non serve riavviare niente.
+
+---
+
+## 5. Struttura del progetto
+
+```
+Toninato/
+├── theme/                 ← il tema WordPress (l'unica parte da sviluppare)
+│   ├── style.css          ← intestazione del tema (nome, versione) e stili
+│   ├── functions.php      ← funzioni, supporti del tema, caricamento CSS/JS
+│   ├── header.php         ← apertura HTML, <head>
+│   ├── footer.php         ← chiusura HTML
+│   └── index.php          ← template di base
+├── docker-compose.yml     ← configurazione dei container
+├── .env.example           ← modello delle variabili (porte, credenziali)
+├── .env                   ← variabili reali (NON va su git)
+└── ISTRUZIONI.md          ← questo file
+```
+
+WordPress (core e plugin) e il database **non** stanno nella repo: vivono nei volumi Docker.
+
+---
+
+## 6. Comandi WP-CLI utili
+
+Tutti i comandi hanno la forma `docker compose run --rm wpcli wp <comando>`.
+
+```bash
+# Plugin
+docker compose run --rm wpcli wp plugin list
+docker compose run --rm wpcli wp plugin install <nome> --activate
+
+# Temi
+docker compose run --rm wpcli wp theme list
+
+# Utenti
+docker compose run --rm wpcli wp user list
+docker compose run --rm wpcli wp user update rmweb --user_pass=nuovapassword
+
+# Aggiornamenti
+docker compose run --rm wpcli wp core update
+docker compose run --rm wpcli wp plugin update --all
+
+# Permalink "belli" (/nome-pagina/)
+docker compose run --rm wpcli wp rewrite structure '/%postname%/'
+
+# Svuotare la cache
+docker compose run --rm wpcli wp cache flush
+```
+
+---
+
+## 7. Backup e ripristino del database
+
+> Usare **Git Bash**, non PowerShell: PowerShell 5 rovina la codifica dei file con `>` e non supporta `<`.
+
+```bash
+# Esporta il database in backup.sql
+docker compose exec -T db mariadb-dump -u root -proot toninato > backup.sql
+
+# Importa backup.sql nel database
+docker compose exec -T db mariadb -u root -proot toninato < backup.sql
+```
+
+Dopo aver importato un database preso da un sito online, sostituire l'indirizzo:
+
+```bash
+docker compose run --rm wpcli wp search-replace 'https://sito-online.it' 'http://localhost:8080' --skip-columns=guid
+```
+
+I file `.sql` non vanno committati.
+
+---
+
+## 8. Ripartire da zero
+
+```bash
+docker compose down -v     # ATTENZIONE: cancella database, plugin e upload
+docker compose up -d
+```
+
+Poi rifare i punti 4, 5 e 6 della prima installazione. La cartella `theme/` non viene toccata.
+
+---
+
+## 9. Versioni del tema
+
+La versione si trova in `theme/style.css` (`Version: X.Y.Z`):
+
+- **Y (minor)** sale quando si aggiungono nuove funzionalità: `0.1.0` → `0.2.0`
+- **Z (patch)** sale per correzioni e modifiche solo di grafica/CSS: `0.1.0` → `0.1.1`
+
+La versione serve anche a forzare il browser a ricaricare il CSS dopo una modifica.
+
+---
+
+## 10. Problemi frequenti
+
+| Problema | Soluzione |
+|----------|-----------|
+| `port is already allocated` | Un altro programma usa la porta: cambiare `WP_PORT` o `PMA_PORT` nel `.env` e rifare `docker compose up -d`. Se cambia la porta del sito, aggiornare anche l'URL: `wp option update home http://localhost:NUOVA` e `wp option update siteurl http://localhost:NUOVA`. |
+| `Error establishing a database connection` | MariaDB si sta ancora avviando: aspettare qualche secondo. Se persiste, `docker compose logs db`. |
+| `Cannot connect to the Docker daemon` | Docker Desktop non è avviato. |
+| Le modifiche al CSS non si vedono | Ricaricare con Ctrl+F5 oppure alzare la versione in `style.css`. |
+| Pagina bianca / errore PHP | `docker compose logs -f wordpress`: il debug è attivo e gli errori compaiono lì. |
+| Le pagine danno 404 | Rigenerare i permalink: `docker compose run --rm wpcli wp rewrite flush`. |
