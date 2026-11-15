@@ -42,7 +42,7 @@ Copy-Item .env.example .env     # PowerShell
 docker compose up -d
 
 # 4. Installa WordPress (attendere qualche secondo dopo l'avvio)
-docker compose run --rm wpcli wp core install --url=http://localhost:8080 --title=Toninato --admin_user=rmweb --admin_password=toninato2026rmw --admin_email=rmweb@example.com --skip-email
+docker compose run --rm wpcli wp core install --url=http://localhost:8080 --title=Toninato --admin_user=rmweb --admin_password=toninato2026rmw --admin_email=sviluppo@socialone.it --skip-email
 
 # 5. Lingua italiana
 docker compose run --rm wpcli wp language core install it_IT --activate
