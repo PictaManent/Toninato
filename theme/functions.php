@@ -47,6 +47,33 @@ add_action( 'wp_enqueue_scripts', function () {
 } );
 
 /**
+ * Favicon del tema (monogramma "ST").
+ * Se in Aspetto → Personalizza → Identità del sito è impostata un'Icona del sito, vale quella.
+ */
+add_action( 'wp_head', 'toninato_favicon', 2 );
+add_action( 'admin_head', 'toninato_favicon' );
+add_action( 'login_head', 'toninato_favicon' );
+function toninato_favicon() {
+	if ( has_site_icon() ) {
+		return;
+	}
+	$dir = get_template_directory_uri() . '/assets/favicon/';
+	$ver = '?v=' . TONINATO_VERSION;
+	printf( '<link rel="icon" href="%s" sizes="48x48">' . "\n", esc_url( $dir . 'favicon.ico' . $ver ) );
+	printf( '<link rel="icon" href="%s" type="image/svg+xml">' . "\n", esc_url( $dir . 'favicon.svg' . $ver ) );
+	printf( '<link rel="icon" href="%s" type="image/png" sizes="192x192">' . "\n", esc_url( $dir . 'icon-192.png' . $ver ) );
+	printf( '<link rel="apple-touch-icon" href="%s">' . "\n", esc_url( $dir . 'apple-touch-icon.png' . $ver ) );
+}
+
+// /favicon.ico: senza Icona del sito WordPress rimanderebbe al proprio logo.
+add_action( 'do_faviconico', function () {
+	if ( ! has_site_icon() ) {
+		wp_safe_redirect( get_template_directory_uri() . '/assets/favicon/favicon.ico', 302 );
+		exit;
+	}
+} );
+
+/**
  * Precarica i font principali per evitare lo "sfarfallio" del testo.
  */
 add_action( 'wp_head', function () {
