@@ -73,11 +73,20 @@ Il tema si modifica direttamente nella cartella `theme/`: i cambiamenti si vedon
 ```
 Toninato/
 ├── theme/                 ← il tema WordPress (l'unica parte da sviluppare)
-│   ├── style.css          ← intestazione del tema (nome, versione) e stili
-│   ├── functions.php      ← funzioni, supporti del tema, caricamento CSS/JS
-│   ├── header.php         ← apertura HTML, <head>
-│   ├── footer.php         ← chiusura HTML
-│   └── index.php          ← template di base
+│   ├── style.css          ← intestazione del tema (nome, versione)
+│   ├── functions.php      ← supporti del tema, caricamento CSS/JS e font
+│   ├── header.php         ← barra contatti, logo, menu
+│   ├── footer.php         ← piè di pagina
+│   ├── front-page.php     ← homepage
+│   ├── index.php          ← template di base (pagine, articoli)
+│   ├── inc/
+│   │   ├── data.php       ← DATI DELLO STUDIO: recapiti, servizi, menu di riserva
+│   │   └── template-tags.php ← icone, logo testuale, funzioni di supporto
+│   └── assets/
+│       ├── css/main.css   ← tutti gli stili (colori e font in :root in cima)
+│       ├── js/main.js     ← menu mobile e animazioni di comparsa
+│       ├── fonts/         ← Bacasime Antique e Tajawal (ospitati in locale, niente Google)
+│       └── images/        ← foto dello studio e dei servizi
 ├── docker-compose.yml     ← configurazione dei container
 ├── .env.example           ← modello delle variabili (porte, credenziali)
 ├── .env                   ← variabili reali (NON va su git)
@@ -85,6 +94,9 @@ Toninato/
 ```
 
 WordPress (core e plugin) e il database **non** stanno nella repo: vivono nei volumi Docker.
+
+**Per cambiare telefono, indirizzo, email o servizi** si modifica solo `theme/inc/data.php`:
+header, homepage e footer si aggiornano da soli.
 
 ---
 
