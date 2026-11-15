@@ -35,6 +35,10 @@ $info = toninato_info();
 					<a href="tel:<?php echo esc_attr( $info['phone']['tel'] ); ?>"><?php echo esc_html( $info['phone']['label'] ); ?></a>
 				</li>
 				<li>
+					<?php echo toninato_icon( 'phone' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+					<a href="tel:<?php echo esc_attr( $info['phone2']['tel'] ); ?>"><?php echo esc_html( $info['phone2']['label'] ); ?></a>
+				</li>
+				<li>
 					<?php echo toninato_icon( 'mobile' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					<a href="tel:<?php echo esc_attr( $info['mobile']['tel'] ); ?>"><?php echo esc_html( $info['mobile']['label'] ); ?></a>
 				</li>

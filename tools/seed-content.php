@@ -188,7 +188,6 @@ $service_content = array(
 	'diritto-contrattuale'          => tn_p( 'Redazione e interpretazione dei contratti, responsabilità pre-contrattuale ed extra-contrattuale, risarcimento per inadempimento contrattuale.', 'lead' ),
 	'diritto-fallimentare'          => tn_p( 'Domande di ammissione al passivo e opposizioni allo stato passivo.', 'lead' ),
 	'recupero-crediti'              => tn_p( 'Procedure monitorie, esecuzioni immobiliari e mobiliari.', 'lead' ),
-	'ristrutturazione-del-debito'   => tn_p( 'La ristrutturazione del debito è una procedura che prevede un accordo con il quale le condizioni originarie di un prestito (tassi, scadenze, divisa, periodo di garanzia) vengono modificate per alleggerire l\'onere del debitore.', 'lead' ),
 );
 
 $i = 1;
@@ -225,7 +224,6 @@ $pages['diritto-civile'] = array(
 			'<strong>Diritto contrattuale</strong> (redazione, interpretazione, responsabilità pre-contrattuale, extra-contrattuale, risarcimento per inadempimento contrattuale)',
 			'<strong>Diritto fallimentare</strong> (domande di ammissione al passivo e opposizioni allo stato passivo)',
 			'<strong>Aste e ricerca immobile</strong>',
-			'<strong>Ristrutturazione del debito</strong>',
 		) )
 		. tn_h( 'Per le aziende' )
 		. tn_p( 'La consulenza legale rivolta alle aziende include questioni e controversie in materia di:' )
@@ -233,7 +231,6 @@ $pages['diritto-civile'] = array(
 			'<strong>Diritto contrattuale</strong> (redazione, interpretazione, responsabilità pre-contrattuale, extra-contrattuale, risarcimento per inadempimento contrattuale)',
 			'<strong>Recupero crediti</strong> (procedure monitorie, esecuzioni immobiliari e mobiliari)',
 			'<strong>Diritto fallimentare</strong>',
-			'<strong>Ristrutturazione del debito</strong>',
 		) ),
 );
 

@@ -24,12 +24,15 @@ $info = toninato_info();
 						<span class="contact-card__value"><?php echo esc_html( $info['address'] ); ?><br><?php echo esc_html( $info['cap'] . ' ' . $info['city'] . ' (' . $info['province'] . ')' ); ?></span>
 						<span class="contact-card__more">Apri in Google Maps</span>
 					</a>
-					<a class="contact-card" href="tel:<?php echo esc_attr( $info['phone']['tel'] ); ?>">
+					<div class="contact-card">
 						<span class="contact-card__icon"><?php echo toninato_icon( 'phone' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
 						<span class="contact-card__label">Telefono studio</span>
-						<span class="contact-card__value"><?php echo esc_html( $info['phone']['label'] ); ?></span>
+						<span class="contact-card__value contact-card__value--list">
+							<a href="tel:<?php echo esc_attr( $info['phone']['tel'] ); ?>"><?php echo esc_html( $info['phone']['label'] ); ?></a>
+							<a href="tel:<?php echo esc_attr( $info['phone2']['tel'] ); ?>"><?php echo esc_html( $info['phone2']['label'] ); ?></a>
+						</span>
 						<span class="contact-card__more">Chiama</span>
-					</a>
+					</div>
 					<a class="contact-card" href="tel:<?php echo esc_attr( $info['mobile']['tel'] ); ?>">
 						<span class="contact-card__icon"><?php echo toninato_icon( 'mobile' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
 						<span class="contact-card__label">Cellulare</span>

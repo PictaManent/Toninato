@@ -12,6 +12,7 @@ $info = toninato_info();
 			<p class="cta__subtitle">Contatta lo studio:</p>
 			<div class="cta__phones">
 				<a href="tel:<?php echo esc_attr( $info['phone']['tel'] ); ?>"><?php echo toninato_icon( 'phone' ); // phpcs:ignore WordPress.Security.EscapeOutput ?> <?php echo esc_html( $info['phone']['label'] ); ?></a>
+				<a href="tel:<?php echo esc_attr( $info['phone2']['tel'] ); ?>"><?php echo toninato_icon( 'phone' ); // phpcs:ignore WordPress.Security.EscapeOutput ?> <?php echo esc_html( $info['phone2']['label'] ); ?></a>
 				<a href="tel:<?php echo esc_attr( $info['mobile']['tel'] ); ?>"><?php echo toninato_icon( 'mobile' ); // phpcs:ignore WordPress.Security.EscapeOutput ?> <?php echo esc_html( $info['mobile']['label'] ); ?></a>
 			</div>
 			<a class="cta__email" href="mailto:<?php echo esc_attr( antispambot( $info['email'] ) ); ?>">

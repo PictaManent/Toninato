@@ -116,7 +116,7 @@ Le pagine esistono davvero in WordPress (Pagine → Tutte le pagine), ognuna con
 | Lo Studio | `/lo-studio/` | predefinito |
 | Garanzia di professionalità | `/garanzia-di-professionalita/` | predefinito |
 | Servizi | `/servizi/` | Servizi (elenco) |
-| 8 aree di attività | `/servizi/<nome>/` | Servizio (dettaglio) |
+| 7 aree di attività | `/servizi/<nome>/` | Servizio (dettaglio) |
 | Diritto civile | `/diritto-civile/` | predefinito |
 | Diritto penale | `/diritto-penale/` | predefinito |
 | Contatti | `/contatti/` | Contatti |
@@ -126,6 +126,9 @@ Le pagine esistono davvero in WordPress (Pagine → Tutte le pagine), ognuna con
 - L'**immagine in evidenza** di ogni pagina è lo sfondo della sua intestazione.
 - Il **riassunto** (excerpt) della pagina è la frase sotto il titolo.
 - **Menu**: Aspetto → Menu. "Menu principale" è collegato all'header, "Menu footer" ai Link utili.
+- **Recensioni Google** (in fondo alla home): arrivano dal plugin *Widgets for Google Reviews* (Trustindex).
+  Si collega la scheda Google dello studio da Impostazioni → Widgets for Google Reviews; finché non è
+  collegata, la sezione non compare ai visitatori.
 
 Per ricreare pagine, immagini e menu (per esempio dopo `docker compose down -v`):
 

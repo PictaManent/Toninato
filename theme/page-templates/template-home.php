@@ -110,7 +110,7 @@ $info = toninato_info();
 					<p>
 						Assistenza legale in ambito civile a persone fisiche e aziende: famiglia, risarcimento danni,
 						successioni, locazioni, condominio, recupero crediti, contratti, procedure fallimentari,
-						aste e ricerca immobili, ristrutturazione del debito.
+						aste e ricerca immobili.
 					</p>
 					<a class="link-more" href="<?php echo esc_url( toninato_page_url( 'diritto-civile' ) ); ?>">
 						Approfondisci <?php echo toninato_icon( 'arrow' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
@@ -160,6 +160,8 @@ $info = toninato_info();
 			</div>
 		</div>
 	</section>
+
+	<?php get_template_part( 'template-parts/reviews' ); ?>
 
 	<?php get_template_part( 'template-parts/cta' ); ?>
 

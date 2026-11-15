@@ -418,7 +418,8 @@ figure { margin: 0; }
 .intro__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 38% center; }
 
 /* Aree di attività ------------------------------------------------------- */
-.services__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px; }
+.services__grid { --cols: 4; --gap: 28px; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--gap); }
+.services__grid > * { flex: 0 0 calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols)); min-width: 0; }
 
 .service-card { height: 100%; }
 
@@ -510,6 +511,10 @@ figure { margin: 0; }
 .gallery__item { aspect-ratio: 4 / 3; overflow: hidden; }
 .gallery__item img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
 .gallery__item:hover img { transform: scale(1.04); }
+
+/* Recensioni ------------------------------------------------------------- */
+.reviews__widget { max-width: 1200px; margin-inline: auto; }
+.reviews + .cta { padding-top: 0; }
 
 /* Contatti --------------------------------------------------------------- */
 .cta__card {
@@ -677,6 +682,9 @@ figure { margin: 0; }
 .contact-card__icon .icon { width: 26px; height: 26px; }
 .contact-card__label { margin-bottom: 6px; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--c-muted); }
 .contact-card__value { flex: 1; font-size: 18px; color: var(--c-navy); word-break: break-word; }
+.contact-card__value--list { display: flex; flex-direction: column; gap: 4px; }
+.contact-card__value--list a { color: inherit; }
+.contact-card__value--list a:hover { color: var(--c-accent); }
 .contact-card__more { margin-top: 14px; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--c-accent); }
 .contact-text { margin-top: clamp(40px, 6vw, 64px); margin-bottom: 0; }
 
@@ -704,7 +712,7 @@ figure { margin: 0; }
 }
 
 @media (max-width: 1180px) {
-	.services__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.services__grid { --cols: 2; }
 	.values__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 44px; }
 	.value + .value { border-left: 0; }
 	.value:nth-child(even) { border-left: 1px solid rgba(255, 255, 255, .12); }
@@ -770,7 +778,7 @@ figure { margin: 0; }
 	.intro { margin-top: -100px; background: linear-gradient(transparent 100px, var(--c-light) 100px); }
 	.intro__text { text-align: left; }
 
-	.services__grid { grid-template-columns: 1fr; }
+	.services__grid { --cols: 1; }
 	.values__grid { grid-template-columns: 1fr; }
 	.value:nth-child(even) { border-left: 0; }
 

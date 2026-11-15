@@ -24,10 +24,12 @@ function toninato_info() {
 		'city'      => 'Moncalieri',
 		'province'  => 'TO',
 		'phone'     => array( 'label' => '011 647 4514', 'tel' => '+390116474514' ),
+		'phone2'    => array( 'label' => '011 068 9987', 'tel' => '+390110689987' ),
 		'mobile'    => array( 'label' => '349 749 5322', 'tel' => '+393497495322' ),
 		'email'     => 'stefania.toninato@yahoo.it',
 		'piva'      => '08798450014',
-		'maps'      => 'https://www.google.com/maps/search/?api=1&query=Via+Cavour+38+10024+Moncalieri+TO',
+		'reviews'   => '[trustindex no-registration=google]', // shortcode del plugin "Widgets for Google Reviews"
+		'maps'      =>'https://www.google.com/maps/search/?api=1&query=Via+Cavour+38+10024+Moncalieri+TO',
 	);
 }
 
@@ -79,12 +81,6 @@ function toninato_services() {
 			'title' => 'Recupero crediti',
 			'image' => 'servizio-crediti.jpg',
 			'text'  => 'Procedure monitorie, esecuzioni immobiliari e mobiliari.',
-		),
-		array(
-			'slug'  => 'ristrutturazione-del-debito',
-			'title' => 'Ristrutturazione del debito',
-			'image' => 'servizio-debito.jpg',
-			'text'  => 'Accordi per modificare le condizioni originarie di un prestito e alleggerire l\'onere del debitore.',
 		),
 	);
 }
