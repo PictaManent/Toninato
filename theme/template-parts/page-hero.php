@@ -2,6 +2,9 @@
 /**
  * Intestazione delle pagine interne: titolo su immagine di copertina.
  *
+ * Sopratitolo: campo "Sopratitolo" della pagina (gruppo "Intestazione della pagina"), altrimenti
+ * il predefinito del template (toninato_page_overline_default()).
+ *
  * Argomenti (opzionali): overline, title, lead, fallback (immagine del tema).
  */
 
@@ -12,7 +15,7 @@ $args     = wp_parse_args( $args ?? array(), array(
 	'fallback' => 'studio-ufficio.jpg',
 ) );
 $parent   = wp_get_post_parent_id( get_the_ID() );
-$overline = $args['overline'] ? $args['overline'] : ( $parent ? get_the_title( $parent ) : '' );
+$overline = toninato_field( 'page_overline', $args['overline'] ? $args['overline'] : toninato_page_overline_default( get_the_ID() ) );
 ?>
 <section class="page-hero" style="--hero-image: url('<?php echo esc_url( toninato_cover_url( get_the_ID(), $args['fallback'] ) ); ?>');">
 	<div class="container page-hero__inner">

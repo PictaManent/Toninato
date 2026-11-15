@@ -1,0 +1,53 @@
+{
+    "key": "group_tn_page",
+    "title": "Intestazione della pagina",
+    "fields": [
+        {
+            "key": "field_tn_page_overline",
+            "label": "Sopratitolo",
+            "name": "page_overline",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "La riga piccola sopra il titolo. Il titolo è quello della pagina, la frase sotto è il Riassunto, lo sfondo è l'Immagine in evidenza.",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "page"
+            },
+            {
+                "param": "page_template",
+                "operator": "!=",
+                "value": "page-templates\/template-home.php"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "side",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": [],
+    "active": true,
+    "description": "Sopratitolo dell'intestazione delle pagine interne",
+    "show_in_rest": false,
+    "display_title": "",
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1794744244
+}

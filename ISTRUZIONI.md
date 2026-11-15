@@ -87,7 +87,7 @@ Toninato/
 │   ├── template-parts/    ← blocchi riusati: intestazione pagina, griglia servizi, contatti
 │   ├── acf-json/          ← gruppi di campi di Secure Custom Fields (scritti da SCF, non a mano)
 │   ├── inc/
-│   │   ├── data.php       ← DATI DELLO STUDIO: recapiti, servizi, menu di riserva
+│   │   ├── data.php       ← dati dell'attività predefiniti (riserva di "Dati dell'attività"), servizi e menu di riserva
 │   │   ├── fields.php     ← funzioni per i campi (Secure Custom Fields) e contenuti predefiniti
 │   │   └── template-tags.php ← icone, logo testuale, funzioni di supporto
 │   └── assets/
@@ -105,8 +105,9 @@ Toninato/
 
 WordPress (core e plugin) e il database **non** stanno nella repo: vivono nei volumi Docker.
 
-**Per cambiare telefono, indirizzo o email** si modifica solo `theme/inc/data.php`:
-header, homepage e footer si aggiornano da soli.
+**Per cambiare telefoni, indirizzo, email e i testi dei riquadri contatti** si usa la voce **"Dati
+dell'attività"** nel menu del pannello: header, footer, riquadri e pagina Contatti si aggiornano da soli.
+I valori in `theme/inc/data.php` sono solo quelli di riserva (plugin spento o campo vuoto).
 
 ### Pagine e menu
 
@@ -139,7 +140,13 @@ Le pagine esistono davvero in WordPress (Pagine → Tutte le pagine), ognuna con
   "Servizi": titolo, riassunto e immagine in evidenza di ciascuna, nell'ordine di Attributi pagina → Ordine.
 - L'**immagine in evidenza** di ogni pagina è lo sfondo della sua intestazione.
 - Il **riassunto** (excerpt) della pagina è la frase sotto il titolo.
+- Il **sopratitolo** (la riga piccola sopra il titolo) è nel riquadro **"Intestazione della pagina"** nella
+  colonna di destra dell'editor. Se è vuoto si usa quello predefinito (es. "Servizi" nelle pagine dei servizi).
+- **Contatti**: i testi delle schede sono nel riquadro **"Contenuti della pagina Contatti"**; indirizzo,
+  telefoni ed email in "Dati dell'attività". Più numeri dello stesso tipo diventano un elenco nella stessa scheda.
 - **Menu**: Aspetto → Menu. "Menu principale" è collegato all'header, "Menu footer" ai Link utili.
+- **Favicon**: Aspetto → Personalizza → Identità del sito → **Icona del sito** (immagine quadrata, almeno
+  512×512). Se viene rimossa, il sito usa le icone del tema in `theme/assets/favicon/`.
 - **Recensioni Google** (in fondo alla home): arrivano dal plugin *Widgets for Google Reviews* (Trustindex).
   Si collega la scheda Google dello studio da Impostazioni → Widgets for Google Reviews; finché non è
   collegata, la sezione non compare ai visitatori.
@@ -152,7 +159,8 @@ docker compose run --rm wpcli wp eval-file /tools/seed-content.php update   # ri
 ```
 
 Lo script usa come autore l'utente `rmweb` e non crea doppioni se rilanciato. Se Secure Custom Fields è
-attivo compila anche i campi della Home (solo se sono ancora vuoti, o sempre con `update`).
+attivo compila anche tutti i campi (Home, Dati dell'attività, sopratitoli, Contatti) con i contenuti
+predefiniti: solo quelli ancora vuoti, o sempre con `update`.
 ⚠️ Con `update` le modifiche fatte a mano a testi, campi e menu vengono sovrascritte.
 
 > In **Git Bash** anteporre `MSYS_NO_PATHCONV=1` al comando, altrimenti `/tools/...` viene trasformato in un

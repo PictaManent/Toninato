@@ -111,3 +111,64 @@ function toninato_menu_fallback( $args ) {
 	}
 	echo '</ul>';
 }
+
+/**
+ * Aree di attività: le pagine figlie di "Servizi" (titolo, riassunto, immagine in evidenza,
+ * nell'ordine di "Attributi pagina → Ordine"). Se non ce ne sono, l'elenco di riserva in inc/data.php.
+ *
+ * @return array Elenco di { slug, title, text, url, thumb (ID allegato), image (file del tema) }.
+ */
+function toninato_service_items() {
+	static $items = null;
+	if ( null !== $items ) {
+		return $items;
+	}
+	$items  = array();
+	$parent = get_page_by_path( 'servizi' );
+	$pages  = $parent ? get_pages( array( 'parent' => $parent->ID, 'sort_column' => 'menu_order,post_title' ) ) : array();
+
+	foreach ( $pages as $page ) {
+		$items[] = array(
+			'slug'  => $page->post_name,
+			'title' => get_the_title( $page ),
+			'text'  => $page->post_excerpt,
+			'url'   => get_permalink( $page ),
+			'thumb' => (int) get_post_thumbnail_id( $page ),
+			'image' => '',
+		);
+	}
+	if ( ! $items ) {
+		foreach ( toninato_services() as $service ) {
+			$items[] = array(
+				'slug'  => $service['slug'],
+				'title' => $service['title'],
+				'text'  => $service['text'],
+				'url'   => toninato_page_url( 'servizi/' . $service['slug'] ),
+				'thumb' => 0,
+				'image' => $service['image'],
+			);
+		}
+	}
+	return $items;
+}
+
+/**
+ * Voci <li> con i telefoni dell'attività (icona telefono o cellulare) e l'email.
+ */
+function toninato_contact_items() {
+	$info = toninato_info();
+	foreach ( toninato_phones() as $phone ) {
+		printf(
+			"<li>\n%s\n<a href=\"tel:%s\">%s</a>\n</li>\n",
+			toninato_icon( 'cellulare' === $phone['type'] ? 'mobile' : 'phone' ), // phpcs:ignore WordPress.Security.EscapeOutput
+			esc_attr( $phone['tel'] ),
+			esc_html( $phone['label'] )
+		);
+	}
+	printf(
+		"<li>\n%s\n<a href=\"mailto:%s\">%s</a>\n</li>\n",
+		toninato_icon( 'mail' ), // phpcs:ignore WordPress.Security.EscapeOutput
+		esc_attr( antispambot( $info['email'] ) ),
+		esc_html( antispambot( $info['email'] ) )
+	);
+}

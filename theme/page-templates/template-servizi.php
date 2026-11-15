@@ -11,7 +11,7 @@ get_header();
 <main id="main" class="site-main">
 	<?php while ( have_posts() ) : the_post(); ?>
 
-		<?php get_template_part( 'template-parts/page-hero', null, array( 'overline' => 'Aree di attività' ) ); ?>
+		<?php get_template_part( 'template-parts/page-hero' ); ?>
 
 		<section class="section services">
 			<div class="container">

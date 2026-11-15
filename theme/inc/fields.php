@@ -112,7 +112,7 @@ function toninato_home_defaults() {
 		'hero_name'         => $info['name'],
 		'hero_lines'        => $info['qualifica'] . "\nConsulenza e assistenza in diritto civile e penale",
 		'hero_place'        => $info['city'] . ' (' . $info['province'] . ')',
-		'hero_button_1'     => array( 'url' => 'tel:' . $info['phone']['tel'], 'title' => 'Chiama lo studio', 'target' => '' ),
+		'hero_button_1'     => array( 'url' => 'tel:' . ( toninato_phones( 'fisso' )[0]['tel'] ?? '' ), 'title' => 'Chiama lo studio', 'target' => '' ),
 		'hero_button_2'     => array( 'url' => toninato_page_url( 'contatti' ), 'title' => 'Contatti', 'target' => '' ),
 		'intro_link'        => array( 'url' => toninato_page_url( 'lo-studio' ), 'title' => 'Scopri lo studio', 'target' => '' ),
 		'services_overline' => 'Di cosa si occupa lo studio',
@@ -156,6 +156,62 @@ function toninato_home_defaults() {
 		'reviews_title'     => 'Dicono dello studio',
 	);
 }
+
+/**
+ * Sopratitolo predefinito dell'intestazione di una pagina interna.
+ *
+ * @param int $post_id Pagina.
+ * @return string
+ */
+function toninato_page_overline_default( $post_id ) {
+	$by_template = array(
+		'page-templates/template-servizi.php'  => 'Aree di attività',
+		'page-templates/template-servizio.php' => 'Servizi',
+		'page-templates/template-contatti.php' => 'Studio legale a Moncalieri',
+	);
+	$template = get_page_template_slug( $post_id );
+	if ( isset( $by_template[ $template ] ) ) {
+		return $by_template[ $template ];
+	}
+	$parent = wp_get_post_parent_id( $post_id );
+	return $parent ? get_the_title( $parent ) : '';
+}
+
+/**
+ * Contenuti predefiniti della pagina Contatti (etichette delle schede).
+ *
+ * @return array
+ */
+function toninato_contatti_defaults() {
+	return array(
+		'address_label'  => 'Indirizzo',
+		'address_action' => 'Apri in Google Maps',
+		'phone_label'    => 'Telefono studio',
+		'phone_action'   => 'Chiama',
+		'mobile_label'   => 'Cellulare',
+		'mobile_action'  => 'Chiama',
+		'email_label'    => 'Email',
+		'email_action'   => 'Scrivi',
+	);
+}
+
+/* -------------------------------------------------------------------------
+ * Pagina opzioni "Dati dell'attività" (i campi sono nel gruppo group_tn_studio)
+ * ---------------------------------------------------------------------- */
+
+add_action( 'acf/init', function () {
+	if ( function_exists( 'acf_add_options_page' ) ) {
+		acf_add_options_page( array(
+			'page_title' => "Dati dell'attività",
+			'menu_title' => "Dati dell'attività",
+			'menu_slug'  => 'dati-attivita',
+			'capability' => 'edit_pages',
+			'icon_url'   => 'dashicons-building',
+			'position'   => 21,
+			'redirect'   => false,
+		) );
+	}
+} );
 
 /* -------------------------------------------------------------------------
  * Gruppi di campi: Local JSON in theme/acf-json/

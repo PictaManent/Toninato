@@ -64,7 +64,7 @@ e accessibilità.
 theme/
 ├── style.css              intestazione del tema (Version: X.Y.Z), nessuno stile qui
 ├── functions.php          supporti, menu, CSS/JS (versionati con Version + filemtime), favicon, preload font
-├── inc/data.php           DATI DELL'AZIENDA: recapiti, servizi di riserva, menu di riserva
+├── inc/data.php           DATI DELL'AZIENDA predefiniti, toninato_info()/toninato_phones(), servizi e menu di riserva
 ├── inc/template-tags.php  funzioni di supporto: URL pagine, immagini del tema, icone SVG, logo
 ├── inc/fields.php         campi SCF: percorsi Local JSON, funzioni di lettura, valori predefiniti
 ├── header.php / footer.php
@@ -82,13 +82,17 @@ theme/
 
 Principi:
 
-- **Una sola fonte per i dati aziendali**: `inc/data.php` (`toninato_info()`): telefono, indirizzo,
-  email, P.IVA, shortcode recensioni. Header, footer, CTA e pagina Contatti leggono da lì.
+- **Una sola fonte per i dati aziendali**: `toninato_info()` in `inc/data.php`. Legge la pagina opzioni
+  SCF **"Dati dell'attività"** e usa `toninato_info_defaults()` per i campi vuoti o senza plugin (risultato
+  in cache per richiesta, solo dopo `acf/init`). Header, footer, riquadri e pagina Contatti leggono da lì.
+- **Telefoni** come elenco `{ numero, tipo fisso|cellulare }`: `toninato_phones( 'fisso' )`; il link `tel:` si
+  calcola da solo (`toninato_tel()`, +39 se manca il prefisso). In alto si vede il primo fisso; footer e
+  riquadri usano `toninato_contact_items()` / un ciclo sui telefoni. Mai `$info['phone']` fissi nel codice.
 - **Pagine vere in WordPress** con il loro template, non pagine "finte" nel codice: così hanno URL,
   SEO, immagine in evidenza e riassunto modificabili.
 - **Immagine in evidenza** = sfondo dell'intestazione della pagina; **riassunto** = frase sotto il titolo.
-- **Schede dei servizi** = pagine figlie di `/servizi/` (titolo, riassunto, immagine in evidenza,
-  ordine da Attributi pagina). `data.php` resta come riserva se non esistono.
+- **Schede e menu dei servizi** = pagine figlie di `/servizi/` (titolo, riassunto, immagine in evidenza,
+  ordine da Attributi pagina) tramite `toninato_service_items()`. `data.php` resta come riserva.
 - **Menu reali** (Aspetto → Menu) nelle posizioni `primary` e `footer`, con un menu di riserva nel
   codice se non sono assegnati.
 - **Icone** SVG in linea da `toninato_icon( $name )`, niente icon font.
@@ -103,8 +107,18 @@ Principi:
 Generata dal monogramma del logo con il font del sito: Python con `fonttools` + `brotli` (per leggere il
 woff2) e `Pillow`, in un **venv temporaneo** (non nel Python di sistema). Il `.svg` ha le lettere
 convertite in tracciati (niente font esterni); nelle misure piccole del `.ico` le lettere sono più grandi
-per restare leggibili. `functions.php` stampa i `<link rel="icon">` solo se in WordPress non è impostata
-un'"Icona del sito", e reindirizza `/favicon.ico` (che WordPress altrimenti manda al proprio logo).
+per restare leggibili.
+
+Anche qui fallback + campo compilato:
+
+- **Campo WordPress**: `assets/favicon/site-icon.png` (512×512, lettere al 56% perché alcuni sistemi la
+  ritagliano in tondo) è impostata dal seed come **Icona del sito** (Aspetto → Personalizza → Identità del
+  sito), così il cliente la cambia da lì. Il seed la carica come farebbe il Personalizza: allegato con
+  meta `_wp_attachment_context = site-icon` e miniature generate con il filtro
+  `WP_Site_Icon::additional_sizes` (32, 64, 180, 192, 270). WordPress stampa poi i suoi `<link rel="icon">`.
+- **Riserva del tema**: se l'Icona del sito viene tolta, `functions.php` stampa le icone di
+  `assets/favicon/` (`.ico`, `.svg`, 192 px, apple-touch) e reindirizza `/favicon.ico`, che WordPress
+  altrimenti manderebbe al proprio logo.
 
 ---
 
@@ -169,8 +183,22 @@ Errori già fatti, da non ripetere:
    prova di modifica di un campo che si riflette sul sito (poi ripristinare).
 6. **Stage**: deploy del tema, sincronizzazione del gruppo e seed tramite script temporaneo (sezione 6).
 
-Già fatto: **Home** (`group_tn_home`, schede Testata, Presentazione, Aree di attività, Valori,
-Diritto civile e penale, Galleria, Recensioni). Il testo di presentazione resta il contenuto della pagina.
+### Gruppi di campi del progetto
+
+| Gruppo (chiave) | Dove compare | Contenuto | Predefiniti |
+|-----------------|--------------|-----------|-------------|
+| Contenuti della Home (`group_tn_home`) | template Home | testata, titoli delle sezioni, punti di forza, riquadri, galleria, recensioni | `toninato_home_defaults()` |
+| Dati dell'attività (`group_tn_studio`) | pagina opzioni `dati-attivita` (menu "Dati dell'attività", nome generico per riusarla su altri siti) | nome, qualifica, indirizzo, telefoni, email, testi di CTA, riquadro laterale, pagine servizio | `toninato_info_defaults()` |
+| Intestazione della pagina (`group_tn_page`) | tutte le pagine tranne la Home (colonna laterale) | sopratitolo | `toninato_page_overline_default()` (per template) |
+| Contenuti della pagina Contatti (`group_tn_contatti`) | template Contatti | etichette delle schede | `toninato_contatti_defaults()` |
+
+Titolo, testo, **riassunto** e **immagine in evidenza** delle pagine restano i campi nativi di WordPress
+(li usano anche schede dei servizi e SEO): non duplicarli in SCF. Sulle pagine opzioni i valori si
+leggono con `get_field( 'nome', 'option' )` e si scrivono nel seed con `update_field( '<chiave>', $v, 'option' )`.
+
+Per creare gruppi **da script** (come fatto qui) costruire l'array del gruppo e passarlo ad
+`acf_import_field_group()` con `ID = 0`, dopo aver controllato che non esista: SCF lo salva nel database e
+scrive il JSON in `acf-json/`. Per la pagina opzioni serve `acf_add_options_page()` nel codice (`inc/fields.php`).
 
 ---
 
@@ -299,7 +327,8 @@ wp_set_current_user( get_user_by( 'login', 'rmweb' )->ID );
    - prefisso delle funzioni `toninato_` → `<slug>_` in tutto `theme/` e `tools/` (anche gli handle
      `toninato-main`); chiavi dei campi `tn_` → nuovo prefisso breve;
    - `.env.example`: nomi del database.
-3. **Dati**: riscrivere `inc/data.php` (recapiti, servizi) e le pagine in `tools/seed-content.php`;
+3. **Dati**: riscrivere `toninato_info_defaults()` e `toninato_services()` in `inc/data.php`, i predefiniti in
+   `inc/fields.php` e le pagine in `tools/seed-content.php`;
    sostituire immagini, font, colori (`:root` in `main.css`), logo/monogramma e favicon.
 4. **Ambiente locale**: sezione 2; creare `rmweb`, eliminare `admin`, installare SCF, lanciare il seed.
 5. **Campi SCF**: per ogni pagina seguire la ricetta della sezione 4 (fallback + campi compilati).
@@ -318,8 +347,8 @@ wp_set_current_user( get_user_by( 'login', 'rmweb' )->ID );
 ## 10. Stato di questo progetto (Toninato)
 
 - Cliente: Avv. Stefania Toninato, studio legale a Moncalieri (TO). Rifacimento del vecchio sito Joomla.
-- Tema v0.5.0. Pagine: Home, Lo Studio, Garanzia di professionalità, Servizi (+7 aree), Diritto civile,
-  Diritto penale, Contatti. Stage: `https://www.demosocialone.it/toninato4/` allineato al locale.
-- Campi SCF: solo la Home. Da fare: le altre pagine con la stessa ricetta; una pagina opzioni SCF
-  "Dati dello studio" per telefoni, indirizzo, email e testo del riquadro contatti (oggi in `data.php`).
+- Tema v0.6.0. Pagine: Home, Lo Studio, Garanzia di professionalità, Servizi (+7 aree), Diritto civile,
+  Diritto penale, Contatti. Stage: `https://www.demosocialone.it/toninato4/`.
+- Campi SCF: tutti i contenuti del sito sono modificabili dal pannello (4 gruppi, vedi sezione 4), con
+  predefiniti nel codice e campi compilati dal seed.
 - Ancora presenti i contenuti di default di WordPress ("Ciao mondo", "Pagina d'esempio", bozza Privacy).

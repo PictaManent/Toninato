@@ -2,41 +2,14 @@
 /**
  * Griglia delle aree di attività.
  *
- * Le schede sono le pagine figlie di "Servizi" (titolo, riassunto, immagine in evidenza,
- * nell'ordine di "Attributi pagina → Ordine"). Se non ce ne sono, usa l'elenco in inc/data.php.
+ * Le schede sono le pagine figlie di "Servizi" (vedi toninato_service_items()).
  *
  * Argomenti (opzionali): exclude (slug da non mostrare).
  */
 
 $args = wp_parse_args( $args ?? array(), array( 'exclude' => '' ) );
 
-$cards  = array();
-$parent = get_page_by_path( 'servizi' );
-$pages  = $parent ? get_pages( array( 'parent' => $parent->ID, 'sort_column' => 'menu_order,post_title' ) ) : array();
-
-if ( $pages ) {
-	foreach ( $pages as $page ) {
-		$cards[] = array(
-			'slug'  => $page->post_name,
-			'title' => get_the_title( $page ),
-			'text'  => $page->post_excerpt,
-			'url'   => get_permalink( $page ),
-			'thumb' => get_post_thumbnail_id( $page ),
-			'image' => '',
-		);
-	}
-} else {
-	foreach ( toninato_services() as $service ) {
-		$cards[] = array(
-			'slug'  => $service['slug'],
-			'title' => $service['title'],
-			'text'  => $service['text'],
-			'url'   => toninato_page_url( 'servizi/' . $service['slug'] ),
-			'thumb' => 0,
-			'image' => $service['image'],
-		);
-	}
-}
+$cards = toninato_service_items();
 ?>
 <div class="services__grid">
 	<?php foreach ( $cards as $card ) : ?>

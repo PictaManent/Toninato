@@ -1,7 +1,10 @@
 <?php
 /**
- * Dati dello studio: contatti e aree di attività.
- * Unico punto da modificare quando cambiano recapiti o servizi.
+ * Dati dell'attività: recapiti, testi comuni e aree di attività.
+ *
+ * I dati si modificano dal pannello in "Dati dell'attività" (pagina opzioni di Secure Custom Fields).
+ * I valori qui sotto sono quelli di riserva: si usano se il plugin è spento o un campo è vuoto, e con
+ * gli stessi valori tools/seed-content.php compila i campi.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -9,28 +12,110 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Recapiti e dati dello studio.
+ * Dati dell'attività predefiniti (= campi della pagina opzioni "Dati dell'attività").
+ *
+ * @return array
+ */
+function toninato_info_defaults() {
+	return array(
+		// Studio.
+		'name'             => 'Stefania Toninato',
+		'title'            => 'Avvocato',
+		'qualifica'        => 'Patrocinante in Cassazione',
+		'tagline'          => 'Consulenza e assistenza legale in diritto civile e penale',
+		'legal_name'       => 'Toninato Avv. Stefania',
+		'piva'             => '08798450014',
+		// Indirizzo.
+		'address'          => 'Via Cavour, 38',
+		'cap'              => '10024',
+		'city'             => 'Moncalieri',
+		'province'         => 'TO',
+		'maps'             => 'https://www.google.com/maps/search/?api=1&query=Via+Cavour+38+10024+Moncalieri+TO',
+		'appointment_note' => 'Si riceve solo su appuntamento',
+		// Recapiti.
+		'phones'           => array(
+			array( 'number' => '011 647 4514', 'type' => 'fisso' ),
+			array( 'number' => '011 068 9987', 'type' => 'fisso' ),
+			array( 'number' => '349 749 5322', 'type' => 'cellulare' ),
+		),
+		'email'            => 'stefania.toninato@yahoo.it',
+		// Riquadro contatti (CTA).
+		'cta_title'        => 'Hai bisogno di un avvocato a Moncalieri?',
+		'cta_subtitle'     => 'Contatta lo studio:',
+		'cta_note'         => 'Lo studio riceve solo su appuntamento. Si garantisce risposta immediata o un nuovo contatto entro un\'ora.',
+		// Riquadro laterale delle pagine interne.
+		'box_title'        => 'Fissa una consulenza',
+		'box_text'         => 'Lo studio riceve solo su appuntamento. Risposta immediata o un nuovo contatto entro un\'ora.',
+		'box_button'       => 'Contatti',
+		// Pagine dei servizi.
+		'service_side'     => 'Altri servizi',
+		'service_back'     => 'Tutti i servizi',
+		// Solo da codice.
+		'reviews'          => '[trustindex no-registration=google]', // shortcode del plugin "Widgets for Google Reviews"
+	);
+}
+
+/**
+ * Dati dell'attività: quelli salvati in "Dati dell'attività", con i predefiniti per i campi vuoti.
  *
  * @return array
  */
 function toninato_info() {
-	return array(
-		'name'      => 'Stefania Toninato',
-		'title'     => 'Avvocato',
-		'qualifica' => 'Patrocinante in Cassazione',
-		'since'     => '2004',
-		'address'   => 'Via Cavour, 38',
-		'cap'       => '10024',
-		'city'      => 'Moncalieri',
-		'province'  => 'TO',
-		'phone'     => array( 'label' => '011 647 4514', 'tel' => '+390116474514' ),
-		'phone2'    => array( 'label' => '011 068 9987', 'tel' => '+390110689987' ),
-		'mobile'    => array( 'label' => '349 749 5322', 'tel' => '+393497495322' ),
-		'email'     => 'stefania.toninato@yahoo.it',
-		'piva'      => '08798450014',
-		'reviews'   => '[trustindex no-registration=google]', // shortcode del plugin "Widgets for Google Reviews"
-		'maps'      =>'https://www.google.com/maps/search/?api=1&query=Via+Cavour+38+10024+Moncalieri+TO',
-	);
+	static $cache = null;
+	if ( null !== $cache ) {
+		return $cache;
+	}
+	$info  = toninato_info_defaults();
+	$ready = ! function_exists( 'get_field' ) || did_action( 'acf/init' ); // campi leggibili (o plugin assente)
+	if ( function_exists( 'get_field' ) && did_action( 'acf/init' ) ) {
+		foreach ( array_keys( $info ) as $key ) {
+			if ( 'reviews' === $key ) {
+				continue;
+			}
+			$value = get_field( $key, 'option' );
+			if ( null !== $value && '' !== $value && false !== $value && array() !== $value ) {
+				$info[ $key ] = $value;
+			}
+		}
+	}
+	// Telefoni: solo le righe con un numero, con il link tel: calcolato.
+	$info['phones'] = array_values( array_filter( array_map( function ( $p ) {
+		$number = trim( (string) ( $p['number'] ?? '' ) );
+		return '' === $number ? null : array(
+			'label' => $number,
+			'tel'   => toninato_tel( $number ),
+			'type'  => ( $p['type'] ?? '' ) === 'cellulare' ? 'cellulare' : 'fisso',
+		);
+	}, (array) $info['phones'] ) ) );
+	if ( $ready ) {
+		$cache = $info;
+	}
+	return $info;
+}
+
+/**
+ * Numero per i link tel: (+39 aggiunto se manca il prefisso internazionale).
+ *
+ * @param string $number Numero come scritto (es. "011 647 4514").
+ * @return string
+ */
+function toninato_tel( $number ) {
+	$digits = preg_replace( '/[^\d+]/', '', $number );
+	if ( str_starts_with( $digits, '00' ) ) {
+		return '+' . substr( $digits, 2 );
+	}
+	return str_starts_with( $digits, '+' ) ? $digits : '+39' . $digits;
+}
+
+/**
+ * Telefoni dell'attività, tutti o di un tipo ("fisso" o "cellulare").
+ *
+ * @param string $type Tipo (vuoto: tutti).
+ * @return array Elenco di { label, tel, type }.
+ */
+function toninato_phones( $type = '' ) {
+	$phones = toninato_info()['phones'];
+	return $type ? array_values( array_filter( $phones, fn( $p ) => $p['type'] === $type ) ) : $phones;
 }
 
 /**

@@ -73,7 +73,12 @@ function tn_gallery( $ids ) {
  * Immagini: importate una sola volta dalla cartella del tema
  * ---------------------------------------------------------------------- */
 
-function tn_media( $file, $alt ) {
+/**
+ * Importa un'immagine del tema nella Libreria media (una volta sola) e ne restituisce l'ID.
+ * $file è un nome in assets/images/, oppure un percorso relativo ad assets/ (es. "favicon/site-icon.png").
+ * $before_meta (opzionale) viene chiamata sul nuovo allegato prima di generare le miniature.
+ */
+function tn_media( $file, $alt, $before_meta = null ) {
 	$found = get_posts( array(
 		'post_type'      => 'attachment',
 		'post_status'    => 'inherit',
@@ -86,18 +91,22 @@ function tn_media( $file, $alt ) {
 		return (int) $found[0];
 	}
 
-	$src = get_template_directory() . '/assets/images/' . $file;
+	$src = get_template_directory() . '/assets/' . ( str_contains( $file, '/' ) ? $file : 'images/' . $file );
 	if ( ! is_file( $src ) ) {
 		WP_CLI::warning( "Immagine mancante: $file" );
 		return 0;
 	}
-	$tmp = wp_tempnam( $file );
+	$tmp = wp_tempnam( basename( $file ) );
 	copy( $src, $tmp );
-	$id = media_handle_sideload( array( 'name' => $file, 'tmp_name' => $tmp ), 0, $alt );
+	$id = media_handle_sideload( array( 'name' => basename( $file ), 'tmp_name' => $tmp ), 0, $alt );
 	if ( is_wp_error( $id ) ) {
 		@unlink( $tmp );
 		WP_CLI::warning( "Import fallito per $file: " . $id->get_error_message() );
 		return 0;
+	}
+	if ( $before_meta ) {
+		$before_meta( $id );
+		wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, get_attached_file( $id ) ) );
 	}
 	update_post_meta( $id, '_wp_attachment_image_alt', $alt );
 	update_post_meta( $id, '_toninato_source', $file );
@@ -299,6 +308,28 @@ update_option( 'show_on_front', 'page' );
 update_option( 'page_on_front', $ids['home'] );
 
 /* -------------------------------------------------------------------------
+ * Icona del sito (Aspetto → Personalizza → Identità del sito): la favicon del tema
+ * (assets/favicon/site-icon.png, 512×512) caricata come farebbe il Personalizza.
+ * Se viene tolta, il tema torna a usare le sue icone in assets/favicon/.
+ * ---------------------------------------------------------------------- */
+
+if ( $update || ! get_option( 'site_icon' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/class-wp-site-icon.php';
+	$site_icon = new WP_Site_Icon();
+	$icon_id   = tn_media( 'favicon/site-icon.png', get_bloginfo( 'name' ), function ( $id ) use ( $site_icon ) {
+		update_post_meta( $id, '_wp_attachment_context', 'site-icon' );
+		add_filter( 'intermediate_image_sizes_advanced', array( $site_icon, 'additional_sizes' ) );
+	} );
+	remove_filter( 'intermediate_image_sizes_advanced', array( $site_icon, 'additional_sizes' ) );
+	if ( $icon_id ) {
+		update_option( 'site_icon', $icon_id );
+		WP_CLI::log( "+ icona del sito impostata (#$icon_id)" );
+	}
+} else {
+	WP_CLI::log( '= icona del sito già impostata' );
+}
+
+/* -------------------------------------------------------------------------
  * Campi della Home (plugin Secure Custom Fields): riempiti con i contenuti
  * predefiniti del tema, così nel pannello si trovano già compilati.
  * Senza "update" si riempiono solo se la Home non ha ancora campi salvati.
@@ -344,6 +375,61 @@ if ( function_exists( 'update_field' ) && function_exists( 'toninato_home_defaul
 	}
 } else {
 	WP_CLI::log( '(plugin Secure Custom Fields non attivo: campi della Home saltati)' );
+}
+
+/* -------------------------------------------------------------------------
+ * Altri campi SCF, compilati con i contenuti predefiniti del tema:
+ * - "Dati dell'attività" (pagina opzioni)
+ * - "Intestazione della pagina" (sopratitolo di ogni pagina interna)
+ * - "Contenuti della pagina Contatti"
+ * Senza "update" si compila solo ciò che è ancora vuoto.
+ * ---------------------------------------------------------------------- */
+
+if ( function_exists( 'update_field' ) && function_exists( 'toninato_info_defaults' ) ) {
+
+	// Dati dell'attività.
+	if ( $update || '' === (string) get_option( 'options_name', '' ) ) {
+		$s = 'field_tn_studio_';
+		foreach ( toninato_info_defaults() as $name => $value ) {
+			if ( 'reviews' === $name ) {
+				continue; // resta nel codice
+			}
+			if ( 'phones' === $name ) {
+				$value = array_map( fn( $p ) => array(
+					$s . 'phones_number' => $p['number'],
+					$s . 'phones_type'   => $p['type'],
+				), $value );
+			}
+			update_field( $s . $name, $value, 'option' );
+		}
+		WP_CLI::log( "+ Dati dell'attività compilati" );
+	} else {
+		WP_CLI::log( "= Dati dell'attività già compilati" );
+	}
+
+	// Sopratitolo delle pagine interne (anche vuoto: così il campo esiste e si vede cosa c'è).
+	$filled = 0;
+	foreach ( $ids as $path => $id ) {
+		if ( 'home' === $path ) {
+			continue;
+		}
+		if ( $update || ! metadata_exists( 'post', $id, 'page_overline' ) ) {
+			update_field( 'field_tn_page_overline', toninato_page_overline_default( $id ), $id );
+			$filled++;
+		}
+	}
+	WP_CLI::log( $filled ? "+ sopratitolo compilato in $filled pagine" : '= sopratitoli già compilati' );
+
+	// Pagina Contatti.
+	$contatti = $ids['contatti'];
+	if ( $update || '' === (string) get_post_meta( $contatti, 'address_label', true ) ) {
+		foreach ( toninato_contatti_defaults() as $name => $value ) {
+			update_field( 'field_tn_contatti_' . $name, $value, $contatti );
+		}
+		WP_CLI::log( '+ campi della pagina Contatti compilati' );
+	} else {
+		WP_CLI::log( '= campi della pagina Contatti già compilati' );
+	}
 }
 
 /* -------------------------------------------------------------------------

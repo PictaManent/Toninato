@@ -29,10 +29,13 @@ $info = toninato_info();
 			<span><?php echo esc_html( $info['address'] . ', ' . $info['city'] . ' (' . $info['province'] . ')' ); ?></span>
 		</a>
 		<span class="topbar__sep topbar__sep--hide-sm" aria-hidden="true">·</span>
-		<a class="topbar__item topbar__item--hide-sm" href="tel:<?php echo esc_attr( $info['phone']['tel'] ); ?>">
-			<?php echo toninato_icon( 'phone' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-			<span><?php echo esc_html( $info['phone']['label'] ); ?></span>
-		</a>
+		<?php $topbar_phone = toninato_phones( 'fisso' )[0] ?? ( toninato_phones()[0] ?? null ); ?>
+		<?php if ( $topbar_phone ) : ?>
+			<a class="topbar__item topbar__item--hide-sm" href="tel:<?php echo esc_attr( $topbar_phone['tel'] ); ?>">
+				<?php echo toninato_icon( 'phone' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+				<span><?php echo esc_html( $topbar_phone['label'] ); ?></span>
+			</a>
+		<?php endif; ?>
 	</div>
 </div>
 
