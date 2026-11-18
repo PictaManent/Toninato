@@ -259,6 +259,32 @@ pagine, installare plugin, sincronizzare campi, eliminare utenti si usa uno **sc
    l'utente `rmweb` e usa le API di WordPress;
 3. si richiama con `curl` e **si cancella subito dopo**, verificando che l'indirizzo risponda 404.
 
+> ⚠️ **Dal 18/11/2026 il firewall di Aruba (`X-Aruba-WAF`) risponde 403 a ogni file `.php` che non è
+> di WordPress**, anche se non esiste: lo script nella cartella della demo non parte più. Variante che
+> funziona: lo stesso codice come **plugin temporaneo** in `wp-content/mu-plugins/tn-run-<hex>.php`
+> (creare la cartella se manca e toglierla alla fine), agganciato a `wp_loaded`, che non fa niente senza
+> il token e si richiama su un URL di WordPress: `/?tn_run=<token>`. Dopo l'uso: cancellare file e
+> cartella, verificare che il vecchio token non faccia più niente. Lo script qui sotto resta valido come
+> corpo dell'operazione (senza `require wp-load.php`, già caricato).
+>
+> ```php
+> <?php
+> add_action( 'wp_loaded', function () {
+> 	if ( ! isset( $_GET['tn_run'] ) || ! hash_equals( '<token>', (string) $_GET['tn_run'] ) ) { return; }
+> 	nocache_headers(); header( 'Content-Type: text/plain; charset=utf-8' );
+> 	require_once ABSPATH . 'wp-admin/includes/admin.php';
+> 	wp_set_current_user( get_user_by( 'login', 'rmweb' )->ID );
+> 	// ... operazioni ...
+> 	exit;
+> } );
+> ```
+>
+> Con il Local JSON attivo, per **togliere o cambiare campi** di un gruppo già sincronizzato: modificare
+> il JSON e reimportarlo sull'ID del gruppo esistente (`$json['ID'] = <id>; acf_import_field_group( $json )`):
+> SCF elimina dal database i campi che non ci sono più. `acf_get_field( 'chiave' )` restituisce la copia
+> JSON (ID 0), quindi non serve per cancellare. I valori già salvati nelle pagine vanno puliti a parte
+> (`delete_post_meta` su `nome` e `_nome`).
+
 ```php
 <?php
 if ( ! isset( $_GET['t'] ) || ! hash_equals( '<token>', (string) $_GET['t'] ) ) { http_response_code( 404 ); exit; }
