@@ -42,6 +42,7 @@
 	--c-muted: #5f6b75;
 	--c-line: #e3e7ea;
 	--c-light: #f4f4f4;
+	--c-lightest: #f7f8f9;
 	--c-white: #ffffff;
 
 	--f-display: "Bacasime Antique", Georgia, "Times New Roman", serif;
@@ -490,27 +491,47 @@ figure { margin: 0; }
 
 .value p { margin: 0; font-size: 15px; line-height: 1.6; }
 
-/* Diritto civile / penale ------------------------------------------------ */
+/* Diritto civile / penale: icon box ------------------------------------- */
+.areas { background: var(--c-lightest); }
+
 .areas__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
 
-.area { display: flex; flex-direction: column; background: var(--c-white); box-shadow: var(--shadow-sm); }
+.area {
+	position: relative;
+	display: grid;
+	grid-template-columns: 132px minmax(0, 1fr);
+	overflow: hidden;
+	background: var(--c-white);
+	box-shadow: var(--shadow-sm);
+	transition: box-shadow .3s var(--ease), transform .3s var(--ease);
+}
+.area:hover { box-shadow: var(--shadow); transform: translateY(-4px); }
 
-.area__media { aspect-ratio: 16 / 9; overflow: hidden; }
-.area__media img { width: 100%; height: 100%; object-fit: cover; }
+/* Colonna blu con icona e numero */
+.area__side {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+	padding: 40px 0 32px;
+	background: var(--c-navy);
+	color: #7fb6cc;
+	transition: background-color .3s var(--ease);
+}
+.area:hover .area__side { background: var(--c-accent); color: var(--c-white); }
+.area__icon .icon { width: 52px; height: 52px; stroke-width: 1.25; }
+.area__num { font-family: var(--f-display); font-size: 34px; line-height: 1; letter-spacing: 2px; color: rgba(255, 255, 255, 0.35); }
 
-.area__body { padding: clamp(26px, 3.5vw, 40px); }
+/* Icona grande in filigrana */
+.area__mark { position: absolute; right: -28px; bottom: -36px; color: var(--c-navy); opacity: .045; pointer-events: none; }
+.area__mark .icon { width: 210px; height: 210px; stroke-width: 1; }
+
+.area__body { position: relative; display: flex; flex-direction: column; align-items: flex-start; padding: clamp(30px, 4vw, 46px); }
 .area__body p:not(.overline) { color: var(--c-muted); }
+.area__body .link-more { margin-top: auto; }
 
 .area__title { font-family: var(--f-display); font-weight: 400; font-size: 30px; letter-spacing: 1px; text-transform: uppercase; }
-
-/* Galleria --------------------------------------------------------------- */
-.gallery { background: var(--c-light); }
-
-.gallery__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-
-.gallery__item { aspect-ratio: 4 / 3; overflow: hidden; }
-.gallery__item img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
-.gallery__item:hover img { transform: scale(1.04); }
 
 /* Recensioni ------------------------------------------------------------- */
 .reviews__widget { max-width: 1200px; margin-inline: auto; }
@@ -712,6 +733,9 @@ figure { margin: 0; }
 }
 
 @media (max-width: 1180px) {
+	.area { grid-template-columns: 96px minmax(0, 1fr); }
+	.area__icon .icon { width: 42px; height: 42px; }
+	.area__num { font-size: 28px; }
 	.services__grid { --cols: 2; }
 	.values__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 44px; }
 	.value + .value { border-left: 0; }
@@ -751,13 +775,16 @@ figure { margin: 0; }
 	.intro__media { order: -1; min-height: 0; aspect-ratio: 16 / 9; }
 
 	.areas__grid { grid-template-columns: 1fr; }
-	.gallery__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 	.page-layout { grid-template-columns: 1fr; }
 	.page-aside { position: static; }
 }
 
 @media (max-width: 640px) {
+	.area { grid-template-columns: 1fr; }
+	.area__side { flex-direction: row; padding: 22px 28px; }
+	.area__icon .icon { width: 44px; height: 44px; }
+	.area__num { font-size: 28px; }
 	body { font-size: 16px; }
 
 	.topbar { font-size: 13px; }

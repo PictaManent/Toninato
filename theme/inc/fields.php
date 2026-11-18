@@ -107,7 +107,7 @@ function toninato_link_attrs( $link ) {
 function toninato_home_defaults() {
 	$info = toninato_info();
 	return array(
-		'hero_image'        => 'studio-ufficio.jpg',
+		'hero_image'        => 'hero-studio.jpg',
 		'hero_title'        => $info['title'],
 		'hero_name'         => $info['name'],
 		'hero_lines'        => $info['qualifica'] . "\nConsulenza e assistenza in diritto civile e penale",
@@ -128,29 +128,19 @@ function toninato_home_defaults() {
 		),
 		'areas'             => array(
 			array(
-				'image'    => 'targa-studio.jpg',
-				'alt'      => 'Targa dello studio dell\'Avvocato Stefania Toninato',
+				'icon'     => 'document',
 				'overline' => 'Privati e aziende',
 				'title'    => 'Diritto civile',
 				'text'     => 'Assistenza legale in ambito civile a persone fisiche e aziende: famiglia, risarcimento danni, successioni, locazioni, condominio, recupero crediti, contratti, procedure fallimentari, aste e ricerca immobili.',
 				'link'     => array( 'url' => toninato_page_url( 'diritto-civile' ), 'title' => 'Approfondisci', 'target' => '' ),
 			),
 			array(
-				'image'    => 'biglietto-studio.jpg',
-				'alt'      => 'Biglietto da visita dello Studio Legale Toninato',
+				'icon'     => 'gavel',
 				'overline' => 'Tutela della persona',
 				'title'    => 'Diritto penale',
 				'text'     => 'Assistenza completa per la redazione di querele e nei processi con costituzione di parte civile, fino all\'ultimo grado di giudizio.',
 				'link'     => array( 'url' => toninato_page_url( 'diritto-penale' ), 'title' => 'Approfondisci', 'target' => '' ),
 			),
-		),
-		'gallery_overline'  => 'Via Cavour 38, Moncalieri',
-		'gallery_title'     => 'Nello studio',
-		'gallery'           => array(
-			'studio-ufficio.jpg'       => 'Ufficio dell\'Avvocato Toninato',
-			'studio-ingresso.jpg'      => 'Sala d\'attesa dello studio',
-			'studio-scrivania.jpg'     => 'Scrivania dello studio legale',
-			'studio-sala-riunioni.jpg' => 'Sala riunioni dello studio',
 		),
 		'reviews_overline'  => 'Recensioni Google',
 		'reviews_title'     => 'Dicono dello studio',

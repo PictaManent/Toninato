@@ -187,7 +187,7 @@ Errori già fatti, da non ripetere:
 
 | Gruppo (chiave) | Dove compare | Contenuto | Predefiniti |
 |-----------------|--------------|-----------|-------------|
-| Contenuti della Home (`group_tn_home`) | template Home | testata, titoli delle sezioni, punti di forza, riquadri, galleria, recensioni | `toninato_home_defaults()` |
+| Contenuti della Home (`group_tn_home`) | template Home | testata, titoli delle sezioni, punti di forza, riquadri Diritto civile/penale, recensioni | `toninato_home_defaults()` |
 | Dati dell'attività (`group_tn_studio`) | pagina opzioni `dati-attivita` (menu "Dati dell'attività", nome generico per riusarla su altri siti) | nome, qualifica, indirizzo, telefoni, email, testi di CTA, riquadro laterale, pagine servizio | `toninato_info_defaults()` |
 | Intestazione della pagina (`group_tn_page`) | tutte le pagine tranne la Home (colonna laterale) | sopratitolo | `toninato_page_overline_default()` (per template) |
 | Contenuti della pagina Contatti (`group_tn_contatti`) | template Contatti | etichette delle schede | `toninato_contatti_defaults()` |

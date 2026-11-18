@@ -406,7 +406,9 @@
                         "clock": "Orologio",
                         "phone": "Telefono",
                         "mail": "Busta",
-                        "pin": "Segnaposto"
+                        "pin": "Segnaposto",
+                        "document": "Documento",
+                        "gavel": "Martelletto"
                     },
                     "default_value": "scale",
                     "multiple": 0,
@@ -483,7 +485,7 @@
         },
         {
             "key": "field_tn_home_areas",
-            "label": "Riquadri con foto",
+            "label": "Riquadri con icona",
             "name": "areas",
             "aria-label": "",
             "type": "repeater",
@@ -503,11 +505,11 @@
             "rows_per_page": 20,
             "sub_fields": [
                 {
-                    "key": "field_tn_home_areas_image",
-                    "label": "Immagine",
-                    "name": "image",
+                    "key": "field_tn_home_areas_icon",
+                    "label": "Icona",
+                    "name": "icon",
                     "aria-label": "",
-                    "type": "image",
+                    "type": "select",
                     "instructions": "",
                     "required": false,
                     "conditional_logic": false,
@@ -516,16 +518,27 @@
                         "class": "",
                         "id": ""
                     },
-                    "return_format": "id",
-                    "preview_size": "medium",
-                    "library": "all",
-                    "min_width": 0,
-                    "min_height": 0,
-                    "min_size": 0,
-                    "max_width": 0,
-                    "max_height": 0,
-                    "max_size": 0,
-                    "mime_types": "",
+                    "choices": {
+                        "scale": "Bilancia",
+                        "shield": "Scudo",
+                        "chat": "Fumetto",
+                        "users": "Persone",
+                        "clock": "Orologio",
+                        "phone": "Telefono",
+                        "mail": "Busta",
+                        "pin": "Segnaposto",
+                        "document": "Documento",
+                        "gavel": "Martelletto"
+                    },
+                    "default_value": "document",
+                    "multiple": 0,
+                    "allow_null": 0,
+                    "ui": 0,
+                    "ajax": 0,
+                    "placeholder": "",
+                    "return_format": "value",
+                    "create_options": 0,
+                    "save_options": 0,
                     "parent_repeater": "field_tn_home_areas"
                 },
                 {
@@ -609,92 +622,6 @@
                     "parent_repeater": "field_tn_home_areas"
                 }
             ]
-        },
-        {
-            "key": "field_tn_home_tab_gallery",
-            "label": "Galleria",
-            "name": "",
-            "aria-label": "",
-            "type": "tab",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": false,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "placement": "top",
-            "endpoint": 0,
-            "selected": 0
-        },
-        {
-            "key": "field_tn_home_gallery_overline",
-            "label": "Sopratitolo",
-            "name": "gallery_overline",
-            "aria-label": "",
-            "type": "text",
-            "instructions": "",
-            "required": false,
-            "conditional_logic": false,
-            "wrapper": {
-                "width": "50",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "maxlength": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": ""
-        },
-        {
-            "key": "field_tn_home_gallery_title",
-            "label": "Titolo",
-            "name": "gallery_title",
-            "aria-label": "",
-            "type": "text",
-            "instructions": "",
-            "required": false,
-            "conditional_logic": false,
-            "wrapper": {
-                "width": "50",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "maxlength": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": ""
-        },
-        {
-            "key": "field_tn_home_gallery",
-            "label": "Foto",
-            "name": "gallery",
-            "aria-label": "",
-            "type": "gallery",
-            "instructions": "Si vedono meglio in numero pari (4, 8...). Il testo alternativo si modifica nella foto.",
-            "required": false,
-            "conditional_logic": false,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "return_format": "id",
-            "preview_size": "medium",
-            "library": "all",
-            "insert": "append",
-            "min": 0,
-            "max": 0,
-            "min_width": 0,
-            "min_height": 0,
-            "min_size": 0,
-            "max_width": 0,
-            "max_height": 0,
-            "max_size": 0,
-            "mime_types": ""
         },
         {
             "key": "field_tn_home_tab_reviews",
@@ -794,6 +721,6 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1794742878,
+    "modified": 1795044567,
     "local_file": "\/var\/www\/html\/wp-content\/themes\/toninato\/acf-json\/group_tn_home.json"
 }

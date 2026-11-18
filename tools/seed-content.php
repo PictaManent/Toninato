@@ -341,7 +341,7 @@ if ( function_exists( 'update_field' ) && function_exists( 'toninato_home_defaul
 		$d = toninato_home_defaults();
 		$k = 'field_tn_home_';
 
-		foreach ( array( 'hero_title', 'hero_name', 'hero_lines', 'hero_place', 'services_overline', 'services_title', 'services_lead', 'values_overline', 'values_title', 'gallery_overline', 'gallery_title', 'reviews_overline', 'reviews_title' ) as $name ) {
+		foreach ( array( 'hero_title', 'hero_name', 'hero_lines', 'hero_place', 'services_overline', 'services_title', 'services_lead', 'values_overline', 'values_title', 'reviews_overline', 'reviews_title' ) as $name ) {
 			update_field( $k . $name, $d[ $name ], $home_id );
 		}
 		foreach ( array( 'hero_button_1', 'hero_button_2', 'intro_link' ) as $name ) {
@@ -356,18 +356,12 @@ if ( function_exists( 'update_field' ) && function_exists( 'toninato_home_defaul
 		), $d['values'] ), $home_id );
 
 		update_field( $k . 'areas', array_map( fn( $a ) => array(
-			$k . 'areas_image'    => tn_media( $a['image'], $a['alt'] ),
+			$k . 'areas_icon'     => $a['icon'],
 			$k . 'areas_overline' => $a['overline'],
 			$k . 'areas_title'    => $a['title'],
 			$k . 'areas_text'     => $a['text'],
 			$k . 'areas_link'     => $a['link'],
 		), $d['areas'] ), $home_id );
-
-		$gallery = array();
-		foreach ( $d['gallery'] as $file => $alt ) {
-			$gallery[] = tn_media( $file, $alt );
-		}
-		update_field( $k . 'gallery', array_values( array_filter( $gallery ) ), $home_id );
 
 		WP_CLI::log( '+ campi della Home compilati' );
 	} else {

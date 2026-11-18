@@ -126,7 +126,7 @@ Le pagine esistono davvero in WordPress (Pagine → Tutte le pagine), ognuna con
 
 - I **testi** si modificano dall'editor di WordPress.
 - **Home**: il testo di presentazione (riquadro bianco sotto la testata) è il contenuto della pagina; tutto il
-  resto (testata, titoli delle sezioni, punti di forza, riquadri Diritto civile/penale, galleria, titolo delle
+  resto (testata, titoli delle sezioni, punti di forza, riquadri Diritto civile/penale, titolo delle
   recensioni) si modifica nel riquadro **"Contenuti della Home"** sotto l'editor, diviso in schede.
   Serve il plugin **Secure Custom Fields** (gratuito, compatibile con ACF). Se il plugin è spento o un campo è
   vuoto, il sito mostra i contenuti predefiniti (in `theme/inc/fields.php`).

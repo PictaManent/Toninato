@@ -105,16 +105,15 @@ $d = toninato_home_defaults();
 			<?php foreach ( toninato_field( 'areas', $d['areas'] ) as $i => $area ) : ?>
 				<?php
 				$fallback = $d['areas'][ $i ] ?? $d['areas'][0];
-				$is_file  = ! is_numeric( $area['image'] );
+				$icon     = ! empty( $area['icon'] ) ? $area['icon'] : $fallback['icon'];
 				$link     = toninato_link( $area['link'] ?? null, array( 'url' => '', 'title' => '', 'target' => '' ) );
 				?>
 				<article class="area">
-					<div class="area__media">
-						<?php
-						// phpcs:ignore WordPress.Security.EscapeOutput
-						echo toninato_image_tag( $is_file ? 0 : $area['image'], $is_file && $area['image'] ? $area['image'] : $fallback['image'], $area['alt'] ?? $area['title'], array( 'width' => 1600, 'height' => 1000 ) );
-						?>
+					<div class="area__side">
+						<span class="area__icon"><?php echo toninato_icon( $icon ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
+						<span class="area__num" aria-hidden="true"><?php echo esc_html( sprintf( '%02d', $i + 1 ) ); ?></span>
 					</div>
+					<span class="area__mark" aria-hidden="true"><?php echo toninato_icon( $icon ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
 					<div class="area__body">
 						<?php if ( $area['overline'] ) : ?>
 							<p class="overline"><?php echo esc_html( $area['overline'] ); ?></p>
@@ -131,30 +130,6 @@ $d = toninato_home_defaults();
 					</div>
 				</article>
 			<?php endforeach; ?>
-		</div>
-	</section>
-
-	<!-- Galleria -->
-	<section class="section gallery">
-		<div class="container">
-			<header class="section-head">
-				<p class="overline"><?php echo esc_html( toninato_field( 'gallery_overline', $d['gallery_overline'] ) ); ?></p>
-				<h2 class="section-title"><?php echo esc_html( toninato_field( 'gallery_title', $d['gallery_title'] ) ); ?></h2>
-			</header>
-			<div class="gallery__grid">
-				<?php $photos = toninato_field( 'gallery' ); ?>
-				<?php if ( $photos ) : ?>
-					<?php foreach ( $photos as $photo_id ) : ?>
-						<figure class="gallery__item"><?php echo wp_get_attachment_image( $photo_id, 'large', false, array( 'loading' => 'lazy' ) ); ?></figure>
-					<?php endforeach; ?>
-				<?php else : ?>
-					<?php foreach ( $d['gallery'] as $file => $alt ) : ?>
-						<figure class="gallery__item">
-							<img src="<?php echo esc_url( toninato_img( $file ) ); ?>" alt="<?php echo esc_attr( $alt ); ?>" width="1920" height="1280" loading="lazy">
-						</figure>
-					<?php endforeach; ?>
-				<?php endif; ?>
-			</div>
 		</div>
 	</section>
 
